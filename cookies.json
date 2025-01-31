@@ -1,0 +1,92 @@
+[
+    {
+        "domain": "www.depop.com",
+        "expirationDate": 1738641429.438776,
+        "hostOnly": true,
+        "httpOnly": false,
+        "name": "gdpr__google__analytics",
+        "path": "/",
+        "sameSite": null,
+        "secure": true,
+        "session": false,
+        "storeId": null,
+        "value": "true"
+    },
+    {
+        "domain": ".www.depop.com",
+        "expirationDate": 1746582807.695822,
+        "hostOnly": false,
+        "httpOnly": true,
+        "name": "cf_clearance",
+        "path": "/",
+        "sameSite": "no_restriction",
+        "secure": true,
+        "session": false,
+        "storeId": null,
+        "value": "pi51OU_USqzajysJR5FSLHIetLZtpDWbTyFGS55hxiM-1715046815-1.0.1.1-RaAtD_fLvO7LicugL_SHN55K7n1m03.jckMvs.eTNCo3B0f61i7jUUYZgOW4yWTcTJIumZYVwPF6MFDMFt5hRQ"
+    },
+    {
+        "domain": ".www.depop.com",
+        "expirationDate": 1738046109.103245,
+        "hostOnly": false,
+        "httpOnly": true,
+        "name": "__cf_bm",
+        "path": "/",
+        "sameSite": "no_restriction",
+        "secure": true,
+        "session": false,
+        "storeId": null,
+        "value": "uQ.2v1YRPZNdGS67rM3Wbru74_KLlsAnK3mSkqkMI_s-1738044309-1.0.1.1-6bTEuUsdlFuo2Lm9g3D1DnJ7pLjyMFa3nq2rMteYhaDinJWQaSSsA9yjKY7MQvrAl.mKUuuTfopwGa8JrSVPSA"
+    },
+    {
+        "domain": ".www.depop.com",
+        "expirationDate": 1769394235,
+        "hostOnly": false,
+        "httpOnly": false,
+        "name": "__stripe_mid",
+        "path": "/",
+        "sameSite": "strict",
+        "secure": true,
+        "session": false,
+        "storeId": null,
+        "value": "4edd0d22-768a-4463-b73c-dca1c9322bf9c471e6"
+    },
+    {
+        "domain": ".www.depop.com",
+        "hostOnly": false,
+        "httpOnly": true,
+        "name": "_cfuvid",
+        "path": "/",
+        "sameSite": "no_restriction",
+        "secure": true,
+        "session": true,
+        "storeId": null,
+        "value": "k5QBgx94I7YyzVRxVhuUFl0RF54AkaVo6h86gnoBtJQ-1738011883057-0.0.1.1-604800000"
+    },
+    {
+        "domain": "www.depop.com",
+        "expirationDate": 1738641429.440225,
+        "hostOnly": true,
+        "httpOnly": false,
+        "name": "gdpr__depop__functional",
+        "path": "/",
+        "sameSite": null,
+        "secure": true,
+        "session": false,
+        "storeId": null,
+        "value": "true"
+    },
+    {
+        "domain": "www.depop.com",
+        "expirationDate": 1738641429.437964,
+        "hostOnly": true,
+        "httpOnly": false,
+        "name": "gdpr__facebook__social",
+        "path": "/",
+        "sameSite": null,
+        "secure": true,
+        "session": false,
+        "storeId": null,
+        "value": "true"
+    }
+]
