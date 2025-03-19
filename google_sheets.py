@@ -12,7 +12,7 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
 #SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-1044349da8d8.json"  
 
 #LAPTOP
-SERVICE_ACCOUNT_FILE = "C:\\Users\\taylo\\source\\depopAutomation\\resellingautomation-9c38ccc65a6d.json"
+#SERVICE_ACCOUNT_FILE = "C:\\Users\\taylo\\source\\depopAutomation\\resellingautomation-9c38ccc65a6d.json"
 
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 client = gspread.authorize(credentials)
