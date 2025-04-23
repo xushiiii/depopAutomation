@@ -42,18 +42,19 @@ def automate_depop_listing(selected_buttons, text_input):
     fit_options = selected_buttons.get("Fit", [])
     occasion_options = selected_buttons.get("Occasion", [])
     package_size = selected_buttons.get("Package Size", [])
-    
+    print(subcategory)
     write_to_sheets(price, title)
     edge_options = Options()
     edge_options.use_chromium = True
-    edge_options.add_argument(r"--user-data-dir=C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data")
-    edge_options.add_argument(r"--profile-directory=Default")
+
+    #LAPTOP EDGE OPTIONS
+    #edge_options.add_argument(r"--user-data-dir=C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data")
+    #edge_options.add_argument(r"--profile-directory=Default")
 
     #PC EDGE OPTIONS:
-    #edge_options.add_argument("user-data-dir=C:\\Users\\Taylor Xu\\AppData\\Local\\Microsoft\\Edge\\User Data")
-    #edge_options.add_argument("profile-directory=Default")
+    edge_options.add_argument("user-data-dir=C:\\Users\\Taylor Xu\\AppData\\Local\\Microsoft\\Edge\\User Data")
+    edge_options.add_argument("profile-directory=Default")
     driver = webdriver.Edge(options=edge_options)
-    print("Launched Edge browser.")
     driver.get("https://www.depop.com/products/create")
 
     try:
@@ -90,52 +91,61 @@ def automate_depop_listing(selected_buttons, text_input):
         # Else: Male, no keys will default to Male 
         category_input.send_keys(Keys.ENTER)
 
+    except Exception as e:
+        print(f"Category submission error: {e}")
+    
+    try: 
         # Subcategory
         subcategory_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "listingCategories__subcategory__select"))
         )
-        if subcategory in options.subcategory_options:
+        if subcategory in options.subcategory_options.get(category, []):
             subcategory_input.send_keys(subcategory)
             subcategory_input.send_keys(Keys.ENTER)
         else:
             print("Error, subcategory not recognized")
+    except Exception as e:
+        print(f"Subcategory submission error: {e}")
 
-        # Type Jeans/Sweatpants/Pants/Leggings (If Applicable)
-        if subcategory == "Jeans" or "Sweatpants" or "Pants" or "Leggings":
-            type_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "bottom-style-attribute__select"))  
-            )
-            for item in item_type:
-                type_input.send_keys(item)
+    try: 
+        #All tops don't have a "type" options, everything else does. 
+        if category != "Tops":
+            #Type Jeans/Sweatpants/Pants/Leggings (If Applicable)
+            if subcategory in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
+                type_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "bottom-style-attribute__select"))  
+                )
+                for item in item_type:
+                    type_input.send_keys(item)
                 type_input.send_keys(Keys.ENTER)
         
-        #Type Jacket and Coats (If Applicable)
-        if subcategory == "Coats" or "Jackets":
-            type_input = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located(By.ID, "#coat-type-attribute__select")
-            )
-            for item in item_type:
-                type_input.send_keys(item)
-                type_input.send_keys(Keys.ENTER)
+            #Type Jacket and Coats (If Applicable)
+            if subcategory in ["Coats", "Jackets"]:
+            # Process coat-type input
+                type_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "coat-type-attribute__select"))
+                )
+                for item in item_type:
+                    type_input.send_keys(item)
+                    type_input.send_keys(Keys.ENTER)
+                
+            #Type Trainer (Sneaker) (If Applicable)
+            if subcategory == "Sneaker":
+                type_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "trainers-fit-attribute__select"))  
+                )
+                for item in item_type:
+                    type_input.send_keys(item)
+                    type_input.send_keys(Keys.ENTER)
             
-        #Type Trainer (Sneaker) (If Applicable)
-        if subcategory == "Sneaker":
-            type_input = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "trainers-fit-attribute__select"))  
-            )
-            for item in item_type:
-                type_input.send_keys(item)
-                type_input.send_keys(Keys.ENTER)
-        
-        #Type Boots (If Applicable)
-        if subcategory == "Boots":
-            type_input = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "#trainers-type-attribute__select"))  
-            )
-            for item in item_type:
-                type_input.send_keys(item)
-                type_input.send_keys(Keys.ENTER)
-
+            #Type Boots (If Applicable)
+            if subcategory == "Boots":
+                type_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "#trainers-type-attribute__select"))  
+                )
+                for item in item_type:
+                    type_input.send_keys(item)
+                    type_input.send_keys(Keys.ENTER)
     except Exception as e:
         print(f"Subcategory submission error: {e}")
 
@@ -147,6 +157,7 @@ def automate_depop_listing(selected_buttons, text_input):
         for occasion in occasion_options:
             occasion_input.send_keys(occasion)
             occasion_input.send_keys(Keys.ENTER)
+
     except Exception as e:
         print(f"Occasion submission error: {e}")
 

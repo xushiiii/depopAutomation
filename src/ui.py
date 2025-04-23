@@ -1,9 +1,23 @@
 import tkinter as tk
-from src.helpers.tab_nav import focus_next_widget
-from src.automation import automate_depop_listing
-import tkinter as tk 
-from src.options import options, text_input, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options
-import src.state as state 
+from .helpers.tab_nav import focus_next_widget
+from .automation import automate_depop_listing
+from .options import options, text_input, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options
+from . import state
+from .grailedAutomation import automate_grailed_listing
+
+# Style Configuration
+BG_COLOR = "#f0f0f0"  # Light gray background
+ACCENT_COLOR = "#4a7abc"  # Blue accent color
+TEXT_COLOR = "#333333"  # Dark gray text
+BUTTON_COLOR = "#ffffff"  # White button background
+SELECTED_BUTTON_COLOR = "#e1e8f0"  # Light blue for selected buttons
+FONT_FAMILY = "Segoe UI"  # Modern font
+
+# Configure root window style
+root = tk.Tk()
+root.title("Depop Item Form")
+root.geometry("1200x700")  # Slightly larger window
+root.configure(bg=BG_COLOR)
 
 def on_text_change(event, label_name, textbox):
     state.text_inputs_data[label_name] = textbox.get("1.0", "end-1c").strip()
@@ -119,24 +133,68 @@ def update_all_buttons():
             del state.all_buttons[btn]  
 
 
+def create_label(title):
+    global row_index, label_exists
+    row_index += 1
+
+    col_index = 0
+    text_label = tk.Label(
+        button_frame, 
+        text=title, 
+        font=(FONT_FAMILY, 14, "bold"),
+        bg=BG_COLOR,
+        fg=TEXT_COLOR
+    )
+    text_label.grid(row=row_index, column=col_index, sticky="w", padx=15, pady=8)
+
+    textbox = tk.Text(
+        button_frame, 
+        height=1, 
+        width=15, 
+        font=(FONT_FAMILY, 11),
+        wrap="word", 
+        bd=1, 
+        relief="solid",
+        bg="white"
+    )
+    textbox.grid(row=row_index, column=1, sticky="ew", padx=15, pady=8)
+    button_frame.columnconfigure(1, weight=1)
+
+    state.text_inputs_data[title] = ""
+    state.textbox_dict[title] = textbox
+
+    textbox.bind("<KeyRelease>", lambda event: on_text_change(event, title, textbox))
+    textbox.bind("<Tab>", lambda event, tb=textbox: focus_next_widget(state.textbox_dict, event, tb))
+
+    state.labels.append(text_label)
+    state.textboxs.append(textbox)
+    label_exists = True
+
+
 def create_button(parent_frame, j, i, category, button_text):
     input_button = tk.Button(
         parent_frame, 
         text=button_text, 
-        font=("Arial", 12, "bold"),
-        command=lambda c=category, v=button_text: on_button_click(c, v)  # ✅ Pass variables explicitly
+        font=(FONT_FAMILY, 11),
+        bg=BUTTON_COLOR,
+        fg=TEXT_COLOR,
+        relief="flat",
+        padx=10,
+        pady=5,
+        command=lambda c=category, v=button_text: on_button_click(c, v)
     )
-    input_button.grid(row = j, column = i, padx=10, pady=5, stick="w")
+    input_button.grid(row=j, column=i, padx=8, pady=6, sticky="w")
     state.all_buttons[input_button] = (category, button_text)
     return input_button
 
-root = tk.Tk()
-root.title("Depop Item Form")
-root.geometry("1000x500")
+# Create main container with padding
+main_container = tk.Frame(root, bg=BG_COLOR, padx=20, pady=20)
+main_container.pack(fill="both", expand=True)
 
-canvas = tk.Canvas(root)
-scrollbar = tk.Scrollbar(root, orient="vertical", command=canvas.yview)
-scrollable_frame = tk.Frame(canvas)
+# Create canvas and scrollbar
+canvas = tk.Canvas(main_container, bg=BG_COLOR, highlightthickness=0)
+scrollbar = tk.Scrollbar(main_container, orient="vertical", command=canvas.yview)
+scrollable_frame = tk.Frame(canvas, bg=BG_COLOR, padx=20, pady=20)
 
 scrollable_frame.bind(
     "<Configure>",
@@ -146,47 +204,30 @@ scrollable_frame.bind(
 canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 canvas.configure(yscrollcommand=scrollbar.set)
 
-scrollbar.pack(side="right", fill="y")
+# Pack scrollbar and canvas
+scrollbar.pack(side="right", fill="y", padx=5)
 canvas.pack(side="left", fill="both", expand=True)
+
 def _on_mouse_wheel(event):
     canvas.yview_scroll(-1 * (event.delta // 120), "units")
 
-root.bind_all("<MouseWheel>", _on_mouse_wheel)  
-main_frame = tk.Frame(scrollable_frame)
-main_frame.pack(fill="x", padx=20, pady=20)
+root.bind_all("<MouseWheel>", _on_mouse_wheel)
 
-text_frame = tk.Frame(main_frame)
+# Create main content frame
+main_frame = tk.Frame(scrollable_frame, bg=BG_COLOR)
+main_frame.pack(fill="x", pady=10)
+
+# Create section frames with visual separation
+text_frame = tk.LabelFrame(main_frame, text="Item Details", font=(FONT_FAMILY, 12, "bold"), 
+                          bg=BG_COLOR, fg=TEXT_COLOR, padx=15, pady=15)
 text_frame.pack(fill="x", padx=10, pady=10)
 
-button_frame = tk.Frame(main_frame)
+button_frame = tk.LabelFrame(main_frame, text="Item Attributes", font=(FONT_FAMILY, 12, "bold"),
+                           bg=BG_COLOR, fg=TEXT_COLOR, padx=15, pady=15)
 button_frame.pack(fill="x", padx=10, pady=10)
+
 i = 0
 label_exists = False
-
-def create_label(title):
-    global row_index, label_exists
-    row_index += 1
-
-    col_index = 0
-    text_label = tk.Label(button_frame, text=title, font=("Arial", 15, "bold"))
-    text_label.grid(row = row_index, column = col_index, stick="w", padx=10)
-
-    textbox = tk.Text(button_frame, height = 1, width = 10, font=("Arial", 10), wrap="word", bd = 1, relief="solid")
-    textbox.grid(row=row_index, column=1, sticky="ew", padx=10, pady=5)
-    button_frame.columnconfigure(1, weight=1)
-
-    state.text_inputs_data[title] = ""  
-    state.textbox_dict[title] = textbox  # ✅ Store textbox in dictionary
-
-    #print(f"Creating text field for {title}")  # Debugging
-
-    textbox.bind("<KeyRelease>", lambda event: on_text_change(event, title, textbox))
-    textbox.bind("<Tab>", lambda event, tb=textbox: focus_next_widget(state.textbox_dict, event, tb))  # ✅ Bind Tab key
-
-    state.labels.append(text_label)
-    state.textboxs.append(textbox)
-    label_exists = True
-
 
 for i in range(len(text_input)):
     text_label = tk.Label(text_frame, text=text_input[i], font=("Arial", 15, "bold"))
@@ -305,21 +346,50 @@ def create_fit(clothing_type):
     update_all_buttons()  # ✅ Refresh button colors after creation
 
 def on_submit():
-    #print("Submitted")
     automate_depop_listing(state.selected_buttons, state.text_inputs_data)
-    state.text_inputs_data.clear()
-    #print("text_input cleared")
-    # Clear selected options
-    state.clear_state()
+    automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
 
-    for name, textbox in state.textbox_dict.items():
-        textbox.delete("1.0", "end")
-    #print("Cleared all textboxes")
+    # Reset all button states
+    for btn, (category, value) in list(state.all_buttons.items()):
+        if btn.winfo_exists():
+            btn.config(bg=BUTTON_COLOR, relief="raised")  # Reset to default button appearance
+    
+    # Clear all selected values
+    state.selected_buttons.clear()
+    state.selected_styles.clear()
+    state.selected_types.clear()
+    state.selected_fit.clear()
+    state.selected_occasion.clear()
+    state.selected_color.clear()
+    state.selected_materials.clear()
+    
+    # Clear all text inputs
+    for textbox in state.textbox_dict.values():
+        if textbox.winfo_exists():
+            textbox.delete("1.0", "end")
+    
+    # Update button states and check subcategories
     update_all_buttons()
-
     check_subcategories()
+    
+    print("Form reset complete")
 
-submit_button = tk.Button(root, text="Submit", font=("Arial", 12), padx=10, pady=5, command=on_submit)
-submit_button.pack(side="bottom", pady=20)
+# Create submit button frame
+submit_frame = tk.Frame(main_frame, bg=BG_COLOR)
+submit_frame.pack(fill="x", padx=10, pady=20)
+
+submit_button = tk.Button(
+    submit_frame,
+    text="Create Listing",
+    font=(FONT_FAMILY, 12, "bold"),
+    bg=ACCENT_COLOR,
+    fg="white",
+    padx=20,
+    pady=10,
+    relief="flat",
+    command=on_submit
+)
+submit_button.pack(pady=10)
+
 root.mainloop()
 
