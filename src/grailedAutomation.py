@@ -9,6 +9,17 @@ from selenium.webdriver.edge.options import Options
 from . import options
 
 
+def find_measurement_input(driver, measurement_name):
+    """Find a specific measurement input field by its label name."""
+    print(f"Looking for {measurement_name} measurement input field...")
+    measurement_xpath = f"//p[contains(@class, 'MeasurementInput-module__displayName___wXItr') and text()='{measurement_name}']/ancestor::div[contains(@class, 'MeasurementInput-module__measurement___iAr4s')]//input"
+    input_field = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, measurement_xpath))
+    )
+    print(f"Found {measurement_name} measurement input field")
+    return input_field
+
+
 def automate_grailed_listing(selected_buttons, text_input):
     print("Starting automation process...")
     # Extract text input
@@ -404,18 +415,49 @@ def automate_grailed_listing(selected_buttons, text_input):
     driver.execute_script(f"arguments[0].value = '{description}';", description_textarea)
     print("Typed description into textarea")
     
-    # Add a delay after typing description
-    print("Waiting for measurement input to appear...")
-    time.sleep(2)
+    # Measurements section
+    print("Starting measurements input...")
+    time.sleep(2)  # Wait for measurements section to be fully loaded
     
-    # Find and type into the measurement input field
-    print("Looking for measurement input field...")
-    measurement_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "div.MeasurementInput-module__rightColumn___znU0M input.MeasurementInput-module__input___DookL"))
-    )
-    print("Found measurement input field, typing test measurement...")
-    measurement_input.send_keys("11")
-    print("Typed test measurement into input field")
+    try:
+        # Chest measurement
+        if pit2pit:
+            chest_input = find_measurement_input(driver, "Chest")
+            chest_input.send_keys(pit2pit)
+            print(f"Entered chest measurement: {pit2pit}")
+
+        # Length measurement
+        if top2bot:
+            length_input = find_measurement_input(driver, "Length")
+            length_input.send_keys(top2bot)
+            print(f"Entered length measurement: {top2bot}")
+
+        # Shoulders measurement (if you have this measurement in your data)
+        shoulders_measurement = text_input.get("Shoulders", "")  # Add this to your text inputs if not already present
+        if shoulders_measurement:
+            shoulders_input = find_measurement_input(driver, "Shoulders")
+            shoulders_input.send_keys(shoulders_measurement)
+            print(f"Entered shoulders measurement: {shoulders_measurement}")
+
+        # Sleeve Length measurement
+        if pit2sleeve:
+            sleeve_input = find_measurement_input(driver, "Sleeve Length")
+            sleeve_input.send_keys(pit2sleeve)
+            print(f"Entered sleeve length measurement: {pit2sleeve}")
+
+        # Hem measurement (if you have this measurement in your data)
+        hem_measurement = text_input.get("Hem", "")  # Add this to your text inputs if not already present
+        if hem_measurement:
+            hem_input = find_measurement_input(driver, "Hem")
+            hem_input.send_keys(hem_measurement)
+            print(f"Entered hem measurement: {hem_measurement}")
+
+    except Exception as e:
+        print(f"Error inputting measurements: {e}")
+        
+    # Add a delay after typing measurements
+    print("Waiting after entering measurements...")
+    time.sleep(2)
     
     # Add a delay after typing measurement
     print("Waiting for hashtag input to appear...")
