@@ -5,6 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from .google_sheets import write_to_sheets
+from .utils import clean_hashtags
 from selenium.webdriver.edge.options import Options
 from . import options
 
@@ -308,7 +309,7 @@ def automate_grailed_listing(selected_buttons, text_input):
     elif size == "XL":
         print("Looking for XL size option...")
         size_option = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//option[@value='xl' and contains(text(), 'US XL / EU 56-58 / 4')]"))
+            EC.presence_of_element_located((By.XPATH, "//option[@value='xl' and contains(text(), 'US XL / EU 56 / 4')]"))
         )
         print("Found XL size option, clicking...")
         size_option.click()
@@ -317,7 +318,7 @@ def automate_grailed_listing(selected_buttons, text_input):
     elif size == "XXL":
         print("Looking for XXL size option...")
         size_option = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//option[@value='xxl' and contains(text(), 'US XXL / EU 58-60 / 5')]"))
+            EC.presence_of_element_located((By.XPATH, "//option[@value='xxl' and contains(text(), 'US XXL / EU 58 / 5')]"))
         )
         print("Found XXL size option, clicking...")
         size_option.click()
@@ -357,46 +358,29 @@ def automate_grailed_listing(selected_buttons, text_input):
     print("Waiting for condition dropdown to appear...")
     time.sleep(2)
     
-    # Find and select the New/Never Worn condition option
+    # Find and select the condition option
+    print("Looking for condition dropdown...")
+    condition_select = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.NAME, "condition"))
+    )
+    
     if condition == "Brand New":
-        print("Looking for New/Never Worn condition option...")
-        condition_option = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//option[@value='is_new' and contains(text(), 'New/Never Worn')]"))
-        )
-        print("Found New/Never Worn condition option, clicking...")
-        condition_option.click()
-        print("Selected New/Never Worn condition")
-
+        print("Selecting Brand New condition...")
+        condition_select.send_keys("New/Never Worn")
     elif condition == "Like New":
-        print("Looking for Like New condition option...")
-        condition_option = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//option[@value='is_new' and contains(text(), 'Gently Used')]"))
-        )
-        print("Found Like New condition option, clicking...")   
-        condition_option.click()
-        print("Selected Like New condition")
-
+        print("Selecting Like New condition...")
+        condition_select.send_keys("Gently Used")
     elif condition == "Used - Excellent" or condition == "Used - Good":
-        print("Looking for Used - Excellent condition option...")
-        condition_option = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//option[@value='is_new' and contains(text(), 'Used')]"))
-        )
-        print("Found Used - Excellent condition option, clicking...")
-        condition_option.click()
-        print("Selected Used - Excellent condition")
-        
+        print("Selecting Used condition...")
+        condition_select.send_keys("Used")
     elif condition == "Used - Fair":
-        print("Looking for Used - Fair condition option...")
-        condition_option = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//option[@value='is_new' and contains(text(), 'Very Worn ')]"))
-        )
-        print("Found Used - Fair condition option, clicking...")
-        condition_option.click()
-        print("Selected Used - Fair condition")
-
+        print("Selecting Used - Fair condition...")
+        condition_select.send_keys("Very Worn")
     else:
         print("Error, condition not found")
-        
+    
+    print("Selected condition")
+    
     # Add a delay after selecting condition
     print("Waiting for description textarea to appear...")
     time.sleep(2)
@@ -445,13 +429,6 @@ def automate_grailed_listing(selected_buttons, text_input):
             sleeve_input.send_keys(pit2sleeve)
             print(f"Entered sleeve length measurement: {pit2sleeve}")
 
-        # Hem measurement (if you have this measurement in your data)
-        hem_measurement = text_input.get("Hem", "")  # Add this to your text inputs if not already present
-        if hem_measurement:
-            hem_input = find_measurement_input(driver, "Hem")
-            hem_input.send_keys(hem_measurement)
-            print(f"Entered hem measurement: {hem_measurement}")
-
     except Exception as e:
         print(f"Error inputting measurements: {e}")
         
@@ -469,8 +446,13 @@ def automate_grailed_listing(selected_buttons, text_input):
         EC.presence_of_element_located((By.CSS_SELECTOR, "input.-hashtag-input"))
     )
     print("Found hashtag input field, typing test and pressing enter...")
-    hashtag_input.send_keys("test")
-    hashtag_input.send_keys(Keys.RETURN)
+    for s in style:
+        hashtag_input.send_keys(s)
+        hashtag_input.send_keys(Keys.RETURN)
+    cleantags = clean_hashtags(hashtags)
+    for tag in cleantags:
+        hashtag_input.send_keys(tag)
+        hashtag_input.send_keys(Keys.RETURN)
     print("Typed test into hashtag input and pressed enter")
     
     # Add a delay after typing hashtag
@@ -496,7 +478,7 @@ def automate_grailed_listing(selected_buttons, text_input):
         EC.presence_of_element_located((By.NAME, "price"))
     )
     print("Found price input field, typing 1...")
-    price_input.send_keys("1")
+    price_input.send_keys(price)
     print("Typed 1 into price input field")
     
     # Add a delay after typing price

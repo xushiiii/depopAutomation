@@ -285,7 +285,7 @@ def check_subcategories():
         create_subcategory("Bottoms")
         create_label("Waist")
         create_label("Inseam")
-        create_label("Leg Opening")
+        create_label("Rise")
         if state.selected_buttons.get("Subcategory"):
             create_type(state.selected_buttons.get("Subcategory"))
             create_fit(state.selected_buttons.get("Subcategory"))
@@ -347,7 +347,7 @@ def create_fit(clothing_type):
 
 def on_submit():
     automate_depop_listing(state.selected_buttons, state.text_inputs_data)
-    automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
+    #automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
 
     # Reset all button states
     for btn, (category, value) in list(state.all_buttons.items()):

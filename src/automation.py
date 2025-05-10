@@ -42,7 +42,6 @@ def automate_depop_listing(selected_buttons, text_input):
     fit_options = selected_buttons.get("Fit", [])
     occasion_options = selected_buttons.get("Occasion", [])
     package_size = selected_buttons.get("Package Size", [])
-    print(subcategory)
     write_to_sheets(price, title)
     edge_options = Options()
     edge_options.use_chromium = True
@@ -62,14 +61,17 @@ def automate_depop_listing(selected_buttons, text_input):
             EC.presence_of_element_located((By.ID, "description"))
         )
         if subcategory == "T-shirts":
-            regular_description = "Size: " + str(size) + "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nCondition: " + str(condition) + "\nOpen to serious offers!\nPlease message me for most accurate shipping prices\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         elif category == "Bottoms":
-            regular_description = "Waist: " + str(waist) + "\nInseam: " + str(inseam) + "\nLeg Opening: " + str(leg_opening) + "\nCondition: " + str(condition) + "\nOpen to serious offers!\nPlease message me for most accurate shipping prices\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = "Waist: " + str(waist) + "\nInseam: " + str(inseam) + "\nRise: " + str(leg_opening) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         elif category == "Footwear":
-            regular_description = "Size: " + str(size_text) + "\nOpen to serious offers!\nPlease message me for most accurate shipping prices\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = "Size: " + str(size_text) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         else:
-            regular_description = "Size: " + str(size) + "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nPit-to-sleeve: " + str(pit2sleeve) + "\nCondition: " + str(condition) + "\nOpen to serious offers!\nPlease message me for most accurate shipping prices\nAll sales are final\n" + "\n" + str(hashtags)
-        fulldesc = title + "\n\n" + description + "\n\n" + regular_description
+            regular_description = "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nPit-to-sleeve: " + str(pit2sleeve) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
+        if description:
+            fulldesc = title + "\n\n" + description + "\n\n" + regular_description
+        else:
+            fulldesc = title + "\n\n" + regular_description
         description_box.send_keys(fulldesc)
         print("Description box found successfully!")
 
@@ -113,12 +115,20 @@ def automate_depop_listing(selected_buttons, text_input):
             #Type Jeans/Sweatpants/Pants/Leggings (If Applicable)
             if subcategory in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
                 type_input = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "bottom-style-attribute__select"))  
+                    EC.presence_of_element_located((By.ID, "bottom-fit-attribute__select"))  
                 )
                 for item in item_type:
                     type_input.send_keys(item)
-                type_input.send_keys(Keys.ENTER)
-        
+                    type_input.send_keys(Keys.ENTER)
+                
+                if fit_options in options.fit_options:
+                    fit_input = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.ID, "bottom-style-attribute__select"))
+                    )
+                    for item in fit_options:
+                        fit_input.send_keys(item)
+                        fit_input.send_keys(Keys.ENTER)
+            
             #Type Jacket and Coats (If Applicable)
             if subcategory in ["Coats", "Jackets"]:
             # Process coat-type input
@@ -229,6 +239,7 @@ def automate_depop_listing(selected_buttons, text_input):
             size_input.send_keys(Keys.ENTER)
         else:
             size_input.send_keys(size)
+            size_input.send_keys(Keys.ARROW_DOWN)
             size_input.send_keys(Keys.ENTER)         
     except Exception as e:
         print(f"Size submission error: {e}")
