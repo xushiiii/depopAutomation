@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 import time
 from .google_sheets import write_to_sheets
 from .utils import clean_hashtags
@@ -39,6 +40,7 @@ def automate_grailed_listing(selected_buttons, text_input):
     inseam = text_input.get("Inseam", "")
     hashtags = text_input.get("Hashtags", "")
     size_text = text_input.get("Size_text", "")
+    country_of_origin = text_input.get("Country of Origin", "")
 
     # Extract selected button values
     condition = selected_buttons.get("Condition", "")
@@ -75,7 +77,7 @@ def automate_grailed_listing(selected_buttons, text_input):
     # Wait for the department input to be present
     print("Looking for department input field...")
     department_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input.SellFormInput.CustomDropDown-module__input___Z6Qbq"))
+        EC.presence_of_element_located((By.CSS_SELECTOR, "div[role='textbox'].SellFormInput.CustomDropDown-module__input___Z6Qbq"))
     )
     print("Found department input field")
 
@@ -241,22 +243,40 @@ def automate_grailed_listing(selected_buttons, text_input):
     designer_input = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located((By.ID, "designer-autocomplete"))
     )
-    print("Found designer input field, typing Nike...")
+    print(f"Found designer input field, typing {brand}...")
+    designer_input.clear()  # Clear any existing text
     designer_input.send_keys(brand)
-    print("Typed Nike into designer field")
+    print(f"Typed {brand} into designer field")
     
-    # Wait for the autocomplete dropdown to appear and select the first Nike option
+    # Wait for the autocomplete dropdown to appear
     print("Waiting for autocomplete dropdown to appear...")
-    time.sleep(2)
-    print("Looking for first brand option in dropdown...")
-    brand_option = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, f"//li[@data-cy='menu-item' and @role='menuitem' and contains(text(), '{brand}')]"))
-    )
-    print(f"Found {brand} option, clicking...")
-    brand_option.click()
-    print(f"Selected {brand} from dropdown")
+    time.sleep(2)  # Give time for dropdown to appear
     
-    # Add a delay after selecting Nike
+    try:
+        # Create ActionChains instance
+        actions = ActionChains(driver)
+        
+        # Move mouse slightly below the input field (where dropdown usually appears)
+        # First move to the input field
+        actions.move_to_element(designer_input)
+        # Then move down by 50 pixels (adjust this value if needed)
+        actions.move_by_offset(0, 50)
+        # Click at that position
+        actions.click()
+        # Perform the actions
+        actions.perform()
+        print("Clicked below input field to select first dropdown option")
+        
+        # Add a small delay to ensure the selection is processed
+        time.sleep(1)
+        
+    except Exception as e:
+        print(f"Error during mouse movement: {e}")
+        # If mouse movement fails, try pressing enter as fallback
+        designer_input.send_keys(Keys.RETURN)
+        print("Pressed enter as fallback")
+    
+    # Add a delay after selecting brand
     print("Waiting for size dropdown to appear...")
     time.sleep(2)
     
@@ -344,6 +364,8 @@ def automate_grailed_listing(selected_buttons, text_input):
     print("Waiting for color input to appear...")
     time.sleep(2)
     
+    # Color selection temporarily disabled
+    """
     # Find and type into the color input field
     print("Looking for color input field...")
     color_input = WebDriverWait(driver, 10).until(
@@ -357,6 +379,7 @@ def automate_grailed_listing(selected_buttons, text_input):
     # Add a delay after typing color
     print("Waiting for condition dropdown to appear...")
     time.sleep(2)
+    """
     
     # Find and select the condition option
     print("Looking for condition dropdown...")
@@ -439,7 +462,7 @@ def automate_grailed_listing(selected_buttons, text_input):
     # Add a delay after typing measurement
     print("Waiting for hashtag input to appear...")
     time.sleep(2)
-    
+    """
     # Find and type into the hashtag input field
     print("Looking for hashtag input field...")
     hashtag_input = WebDriverWait(driver, 10).until(
@@ -454,7 +477,7 @@ def automate_grailed_listing(selected_buttons, text_input):
         hashtag_input.send_keys(tag)
         hashtag_input.send_keys(Keys.RETURN)
     print("Typed test into hashtag input and pressed enter")
-    
+    """
     # Add a delay after typing hashtag
     print("Waiting for country of origin input to appear...")
     time.sleep(2)
@@ -465,7 +488,7 @@ def automate_grailed_listing(selected_buttons, text_input):
         EC.presence_of_element_located((By.NAME, "countryOfOrigin"))
     )
     print("Found country of origin input field, typing United States...")
-    country_input.send_keys("United States")
+    country_input.send_keys(country_of_origin)
     print("Typed United States into country of origin field")
     
     # Add a delay after typing country

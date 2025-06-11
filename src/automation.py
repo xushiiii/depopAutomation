@@ -8,6 +8,7 @@ from src.google_sheets import write_to_sheets
 from selenium.webdriver.edge.options import Options
 import src.options as options
 
+#TODO: Jacket Type getting stuck 
 
 def automate_depop_listing(selected_buttons, text_input):
     print("Starting Depop automation...")
@@ -24,6 +25,7 @@ def automate_depop_listing(selected_buttons, text_input):
     pit2sleeve = text_input.get("Pit-to-sleeve", "")
     waist = text_input.get("Waist", "")
     leg_opening = text_input.get("Leg Opening", "")
+    rise = text_input.get("Rise", "")
     inseam = text_input.get("Inseam", "")
     hashtags = text_input.get("Hashtags", "")
     size_text = text_input.get("Size_text", "")
@@ -63,15 +65,15 @@ def automate_depop_listing(selected_buttons, text_input):
         if subcategory == "T-shirts":
             regular_description = "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         elif category == "Bottoms":
-            regular_description = "Waist: " + str(waist) + "\nInseam: " + str(inseam) + "\nRise: " + str(leg_opening) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = "Waist: " + str(waist) + "\nInseam: " + str(inseam) + "\nRise: " + str(rise) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         elif category == "Footwear":
             regular_description = "Size: " + str(size_text) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         else:
             regular_description = "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nPit-to-sleeve: " + str(pit2sleeve) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
         if description:
-            fulldesc = title + "\n\n" + description + "\n\n" + regular_description
+            fulldesc = title + "\n" + description + "\n" + regular_description
         else:
-            fulldesc = title + "\n\n" + regular_description
+            fulldesc = title + "\n" + regular_description
         description_box.send_keys(fulldesc)
         print("Description box found successfully!")
 
@@ -130,7 +132,7 @@ def automate_depop_listing(selected_buttons, text_input):
                         fit_input.send_keys(Keys.ENTER)
             
             #Type Jacket and Coats (If Applicable)
-            if subcategory in ["Coats", "Jackets"]:
+            if subcategory == "Coats":
             # Process coat-type input
                 type_input = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, "coat-type-attribute__select"))
@@ -139,10 +141,18 @@ def automate_depop_listing(selected_buttons, text_input):
                     type_input.send_keys(item)
                     type_input.send_keys(Keys.ENTER)
                 
+            if subcategory == "Jackets":
+                type_input = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.ID, "jacket-type-attribute__select"))
+                )
+                for item in item_type:
+                    type_input.send_keys(item)
+                    type_input.send_keys(Keys.ENTER)
+            
             #Type Trainer (Sneaker) (If Applicable)
             if subcategory == "Sneaker":
                 type_input = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "trainers-fit-attribute__select"))  
+                    EC.presence_of_element_located((By.ID, "trainers-type-attribute__select"))  
                 )
                 for item in item_type:
                     type_input.send_keys(item)
@@ -151,11 +161,12 @@ def automate_depop_listing(selected_buttons, text_input):
             #Type Boots (If Applicable)
             if subcategory == "Boots":
                 type_input = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.ID, "#trainers-type-attribute__select"))  
+                    EC.presence_of_element_located((By.ID, "boots-type-attribute__select"))  
                 )
                 for item in item_type:
                     type_input.send_keys(item)
                     type_input.send_keys(Keys.ENTER)
+                    
     except Exception as e:
         print(f"Subcategory submission error: {e}")
 
@@ -239,7 +250,7 @@ def automate_depop_listing(selected_buttons, text_input):
             size_input.send_keys(Keys.ENTER)
         else:
             size_input.send_keys(size)
-            size_input.send_keys(Keys.ARROW_DOWN)
+            size_input.send_keys('"')
             size_input.send_keys(Keys.ENTER)         
     except Exception as e:
         print(f"Size submission error: {e}")

@@ -18,7 +18,7 @@ subcategory_options = {
     "Tops": ["T-shirts", "Hoodies", "Sweatshirts", "Sweaters", "Cardigans", "Shirts", "Other"],
     "Bottoms":["Jeans", "Sweatpants", "Pants", "Shorts", "Leggings"],
     "Coats and Jackets": ["Coats", "Jackets"],
-    "Footwear": ["Sneakers", "Boots"]
+    "Footwear": ["Sneakers", "Boots", "Other"]
 }
 common_bottom_types = ["Cargo", "Distressed", "Faded", "Embroidered", "Ripped"]
 

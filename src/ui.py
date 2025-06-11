@@ -346,8 +346,8 @@ def create_fit(clothing_type):
     update_all_buttons()  # ✅ Refresh button colors after creation
 
 def on_submit():
-    automate_depop_listing(state.selected_buttons, state.text_inputs_data)
-    #automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
+    #automate_depop_listing(state.selected_buttons, state.text_inputs_data)
+    automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
 
     # Reset all button states
     for btn, (category, value) in list(state.all_buttons.items()):
