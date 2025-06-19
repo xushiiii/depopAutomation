@@ -63,18 +63,49 @@ def automate_depop_listing(selected_buttons, text_input):
             EC.presence_of_element_located((By.ID, "description"))
         )
         if subcategory == "T-shirts":
-            regular_description = "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = (
+                f"Pit-to-pit: {pit2pit}\n"
+                f"Top-to-bottom: {top2bot}\n\n"
+                "Open to serious offers!\n"
+                "All sales are final\n\n"
+                f"{hashtags}"
+            )
         elif category == "Bottoms":
-            regular_description = "Waist: " + str(waist) + "\nInseam: " + str(inseam) + "\nRise: " + str(rise) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = (
+                f"Waist: {waist}\n"
+                f"Inseam: {inseam}\n"
+                f"Rise: {rise}\n\n"
+                "Open to serious offers!\n"
+                "All sales are final\n\n"
+                f"{hashtags}"
+            )
         elif category == "Footwear":
-            regular_description = "Size: " + str(size_text) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = (
+                "Open to serious offers!\n"
+                "All sales are final\n\n"
+                f"{hashtags}"
+            )
         else:
-            regular_description = "\nPit-to-pit: " + str(pit2pit) + "\nTop-to-bottom: " + str(top2bot) + "\nPit-to-sleeve: " + str(pit2sleeve) + "\nOpen to serious offers!\nAll sales are final\n" + "\n" + str(hashtags)
+            regular_description = (
+                f"Pit-to-pit: {pit2pit}\n"
+                f"Top-to-bottom: {top2bot}\n"
+                f"Pit-to-sleeve: {pit2sleeve}\n\n"
+                "Open to serious offers!\n"
+                "All sales are final\n\n"
+                f"{hashtags}"
+            )
         if description:
-            fulldesc = title + "\n" + description + "\n" + regular_description
+            fulldesc = f"{title}\n\n{description}\n\n{regular_description}"
+            
         else:
-            fulldesc = title + "\n" + regular_description
-        description_box.send_keys(fulldesc)
+            fulldesc = f"{title}\n\n{regular_description}"
+
+        fulldesc = fulldesc.rstrip("\n")
+        description_box.clear()
+        for line in fulldesc.split("\n"):
+            description_box.send_keys(line)
+            description_box.send_keys(Keys.ENTER)
+        
         print("Description box found successfully!")
 
     except Exception as e:
@@ -150,7 +181,7 @@ def automate_depop_listing(selected_buttons, text_input):
                     type_input.send_keys(Keys.ENTER)
             
             #Type Trainer (Sneaker) (If Applicable)
-            if subcategory == "Sneaker":
+            if subcategory == "Sneakers":
                 type_input = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, "trainers-type-attribute__select"))  
                 )
@@ -250,7 +281,7 @@ def automate_depop_listing(selected_buttons, text_input):
             size_input.send_keys(Keys.ENTER)
         else:
             size_input.send_keys(size)
-            size_input.send_keys('"')
+            #size_input.send_keys('"')
             size_input.send_keys(Keys.ENTER)         
     except Exception as e:
         print(f"Size submission error: {e}")
