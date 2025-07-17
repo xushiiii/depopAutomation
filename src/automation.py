@@ -7,10 +7,15 @@ import time
 from src.google_sheets import write_to_sheets
 from selenium.webdriver.edge.options import Options
 import src.options as options
+import subprocess
 
 #TODO: Jacket Type getting stuck 
 
 def automate_depop_listing(selected_buttons, text_input):
+    # Kill any running Edge and EdgeDriver processes
+    subprocess.run('taskkill /F /IM msedge.exe', shell=True)
+    subprocess.run('taskkill /F /IM msedgedriver.exe', shell=True)
+
     print("Starting Depop automation...")
 
     # Extract text inputs
@@ -44,7 +49,9 @@ def automate_depop_listing(selected_buttons, text_input):
     fit_options = selected_buttons.get("Fit", [])
     occasion_options = selected_buttons.get("Occasion", [])
     package_size = selected_buttons.get("Package Size", [])
-    write_to_sheets(price, title)
+
+    #write_to_sheets(price, title)
+
     edge_options = Options()
     edge_options.use_chromium = True
 
@@ -102,9 +109,11 @@ def automate_depop_listing(selected_buttons, text_input):
 
         fulldesc = fulldesc.rstrip("\n")
         description_box.clear()
-        for line in fulldesc.split("\n"):
+        lines = fulldesc.split("\n")
+        for i, line in enumerate(lines):
             description_box.send_keys(line)
-            description_box.send_keys(Keys.ENTER)
+            if i < len(lines) - 1:
+                description_box.send_keys(Keys.ENTER)
         
         print("Description box found successfully!")
 
@@ -145,8 +154,13 @@ def automate_depop_listing(selected_buttons, text_input):
     try: 
         #All tops don't have a "type" options, everything else does. 
         if category != "Tops":
+            print("[DEBUG] category is not 'Tops', proceeding with type options logic.")
+        else:
+            print("[DEBUG] category is 'Tops', skipping type options logic.")
+            
             #Type Jeans/Sweatpants/Pants/Leggings (If Applicable)
             if subcategory in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
+                print("[DEBUG] subcategory is in ['Jeans', 'Sweatpants', 'Pants', 'Leggings'], proceeding with type options logic.")
                 type_input = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, "bottom-fit-attribute__select"))  
                 )
@@ -154,14 +168,18 @@ def automate_depop_listing(selected_buttons, text_input):
                     type_input.send_keys(item)
                     type_input.send_keys(Keys.ENTER)
                 
-                if fit_options in options.fit_options:
+                if fit_options in options.common_bottom_types:
+                    print("[DEBUG] fit_options is in options.common_bottom_types")
                     fit_input = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.ID, "bottom-style-attribute__select"))
                     )
                     for item in fit_options:
                         fit_input.send_keys(item)
                         fit_input.send_keys(Keys.ENTER)
-            
+                else:
+                    print("[DEBUG] fit_options is NOT in options.common_bottom_types")
+            else:
+                print("[DEBUG] subcategory is not in ['Jeans', 'Sweatpants', 'Pants', 'Leggings'], skipping type options logic.")
             #Type Jacket and Coats (If Applicable)
             if subcategory == "Coats":
             # Process coat-type input
@@ -327,20 +345,6 @@ def automate_depop_listing(selected_buttons, text_input):
             style_input.send_keys(Keys.ENTER)
     except Exception as e:
         print(f"Style submission error: {e}")
-            
-    price_x_element = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "#main > form > div.styles__PriceSection-sc-e8abcf0-3.hlTBwK > div > div > div > svg"))
-    )
-    price_x_element.click()
-
-    #Price 
-    try:
-        price_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "price__input")) 
-        )
-        price_input.send_keys(listing_price)
-    except Exception as e:
-        print(f"Price selection error: {e}")
 
     # Parcel Size
     try:
@@ -372,9 +376,22 @@ def automate_depop_listing(selected_buttons, text_input):
             parcel_input.send_keys(Keys.ENTER)
         else:
             print("Package size was not recognized.")
+
     except Exception as e:
         print(f"Parcel submission error: {e}")
 
+    #Price 
+    try:
+        price_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "price__input")) 
+        )
+        price_input.click()
+        price_input.send_keys(Keys.CONTROL, "a")
+        price_input.send_keys(Keys.DELETE)
+        price_input.send_keys(listing_price)
+        #price_input.send_keys(Keys.ENTER)
+    except Exception as e:
+        print(f"Price selection error: {e}")
     #Draft Submit 
     try:
         draft_button = WebDriverWait(driver, 10).until(

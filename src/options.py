@@ -1,4 +1,6 @@
-text_input = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Country of Origin","Size"]
+text_input_grailed = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Country of Origin", "Size"]
+text_input_default = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size"]
+
 color_options = ["Black", "Grey", "White", "Brown", "Tan", "Cream", "Yellow", "Red", "Burgundy", "Orange", "Pink", "Purple", "Blue", "Navy", "Green", "Khaki", "Multi", "Silver", "Gold"]
 package_options = ["XXS", "XS", "S", "M", "L", "XL"]
 options = {

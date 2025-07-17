@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
-from .google_sheets import write_to_sheets
 from .utils import clean_hashtags
 from selenium.webdriver.edge.options import Options
 from . import options

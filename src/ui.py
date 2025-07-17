@@ -1,9 +1,10 @@
 import tkinter as tk
 from .helpers.tab_nav import focus_next_widget
 from .automation import automate_depop_listing
-from .options import options, text_input, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options
+from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options, text_input_grailed, text_input_default
 from . import state
 from .grailedAutomation import automate_grailed_listing
+from src.google_sheets import write_to_sheets
 
 # Style Configuration
 BG_COLOR = "#f0f0f0"  # Light gray background
@@ -21,7 +22,6 @@ root.configure(bg=BG_COLOR)
 
 def on_text_change(event, label_name, textbox):
     state.text_inputs_data[label_name] = textbox.get("1.0", "end-1c").strip()
-    #print(f"Updated {label_name}: {state.text_inputs_data[label_name]}")  
 
 def on_button_click(category, value):
     if category == "Category":
@@ -229,12 +229,73 @@ button_frame.pack(fill="x", padx=10, pady=10)
 i = 0
 label_exists = False
 
+grailed_enabled = tk.BooleanVar(value=False)
+sheets_enabled = tk.BooleanVar(value=True)
+
+def build_text_inputs():
+    # Remove existing widgets
+    for widget in text_frame.grid_slaves():
+        if int(widget.grid_info()["row"]) > 0:  # Keep the checkboxes in row 0
+            widget.destroy()
+    state.text_inputs_data.clear()
+    state.textbox_dict.clear()
+
+    # Choose which fields to show
+    if grailed_enabled.get():
+        fields = text_input_grailed
+    else:
+        fields = text_input_default
+
+    for i, label in enumerate(fields):
+        text_label = tk.Label(text_frame, text=label, font=("Arial", 15, "bold"))
+        text_label.grid(row=i+1, column=0, sticky="w", padx=10)
+        textbox = tk.Text(text_frame, height=3, width=30, font=("Arial", 10), wrap="word", bd=1, relief="solid")
+        textbox.grid(row=i+1, column=1, sticky="ew", padx=10, pady=5)
+        text_frame.columnconfigure(1, weight=1)
+        state.text_inputs_data[label] = ""
+        state.textbox_dict[label] = textbox
+        textbox.bind("<KeyRelease>", lambda event, name=label, tb=textbox: on_text_change(event, name, tb))
+        textbox.bind("<Tab>", lambda event, tb=textbox: focus_next_widget(state.textbox_dict, event, tb))
+
+grailed_checkbox = tk.Checkbutton(
+    text_frame,
+    text="Draft on Grailed?",
+    variable=grailed_enabled,
+    font=(FONT_FAMILY, 15, "bold"),
+    bg=BG_COLOR,
+    fg=TEXT_COLOR,
+    selectcolor=BG_COLOR,
+    activebackground=BG_COLOR,
+    activeforeground=TEXT_COLOR,
+    command=build_text_inputs
+)
+
+sheets_checkbox = tk.Checkbutton(
+    text_frame,
+    text="Track Expenses in Sheets?",
+    variable=sheets_enabled,
+    font=(FONT_FAMILY, 15, "bold"),
+    bg=BG_COLOR,
+    fg=TEXT_COLOR,
+    selectcolor=BG_COLOR,
+    activebackground=BG_COLOR,
+    activeforeground=TEXT_COLOR
+)
+sheets_checkbox.grid(row=0, column=0, sticky="w", padx=10, pady=(0, 5))
+grailed_checkbox.grid(row=0, column=1, sticky="w", padx=10, pady=(0, 5))
+# Shift the rest of the item fields down by starting their row at 1
+if grailed_enabled.get() == True:
+    text_input = text_input_grailed
+else:
+    text_input = text_input_default
+
+
 for i in range(len(text_input)):
     text_label = tk.Label(text_frame, text=text_input[i], font=("Arial", 15, "bold"))
-    text_label.grid(row = i, column=0, sticky="w", padx=10)
+    text_label.grid(row = i+1, column=0, sticky="w", padx=10)
 
     textbox = tk.Text(text_frame, height = 3, width = 30, font=("Arial", 10), wrap="word", bd = 1, relief="solid")
-    textbox.grid(row=i, column=1, sticky="ew", padx=10, pady=5)
+    textbox.grid(row=i+1, column=1, sticky="ew", padx=10, pady=5)
     text_frame.columnconfigure(1, weight=1)
     state.text_inputs_data[text_input[i]] = ""
     state.textbox_dict[text_input[i]] = textbox  # ✅ Stores textbox widgets
@@ -242,7 +303,7 @@ for i in range(len(text_input)):
     textbox.bind("<KeyRelease>", lambda event, name=text_input[i], tb=textbox: on_text_change(event, name, tb))
     textbox.bind("<Tab>", lambda event, tb=textbox: focus_next_widget(state.textbox_dict, event, tb))  # ✅ Bind Tab key
 
-row_index = len(text_input)  
+row_index = len(text_input) + 1  # Update row_index to account for the extra row
 
 for key, values in options.items():
     col_index = 1
@@ -309,7 +370,6 @@ def check_subcategories():
         if state.selected_buttons.get("Subcategory") == "Sneakers":
             create_type("Sneakers")
 
-
 def create_subcategory(clothing_category):
     global row_index
     col_index = 1
@@ -320,7 +380,6 @@ def create_subcategory(clothing_category):
         state.all_buttons[btn] = ("Subcategory", subcategory)  # ✅ Ensure tracking in state.all_buttons
         col_index += 1
     update_all_buttons()  # ✅ Refresh button colors after creation
-
 
 def create_type(clothing_type):
     global row_index
@@ -345,8 +404,12 @@ def create_fit(clothing_type):
     update_all_buttons()  # ✅ Refresh button colors after creation
 
 def on_submit():
+    if sheets_enabled.get() == True:
+        write_to_sheets(state.text_inputs_data.get("Bought For Price"), state.text_inputs_data.get("Title"))
     automate_depop_listing(state.selected_buttons, state.text_inputs_data)
-    #automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
+
+    if grailed_enabled.get() == True:
+        automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
 
     # Reset all button states
     for btn, (category, value) in list(state.all_buttons.items()):
@@ -389,6 +452,9 @@ submit_button = tk.Button(
     command=on_submit
 )
 submit_button.pack(pady=10)
+
+# After creating the checkboxes in text_frame:
+build_text_inputs()
 
 root.mainloop()
 
