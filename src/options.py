@@ -1,10 +1,12 @@
+common_bottom_types = ["Cargo", "Distressed", "Faded", "Embroidered", "Ripped"]
+common_bottom_fit = ["Bootcut", "Flare", "High waisted", "Low rise", "Straight leg", "Wide leg"]
 text_input_grailed = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Country of Origin", "Size"]
 text_input_default = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size"]
 
 color_options = ["Black", "Grey", "White", "Brown", "Tan", "Cream", "Yellow", "Red", "Burgundy", "Orange", "Pink", "Purple", "Blue", "Navy", "Green", "Khaki", "Multi", "Silver", "Gold"]
 package_options = ["XXS", "XS", "S", "M", "L", "XL"]
 options = {
-    "Occasion": ["Casual", "Festival", "Going Out", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
+    "Occasion": ["Casual", "Festival", "Going Out", "Special Occassion", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
     "Material": ["Acrylic", "Canvas", "Cotton", "Polyester", "Leather", "Nylon", "Silk", "Wool"],
     "Condition": ["Brand New", "Like New", "Used - Excellent", "Used - Good", "Used - Fair"],
     "Package Size": ["XXS", "XS", "S", "M", "L", "XL"],
@@ -17,14 +19,12 @@ options = {
 }
 
 subcategory_options = {
-    "Tops": ["T-shirts", "Hoodies", "Sweatshirts", "Sweaters", "Cardigans", "Shirts", "Other"],
+    "Tops": ["T-shirts", "Hoodies", "Sweatshirts", "Sweaters", "Cardigans", "Shirts", "Polo Shirts", "Other"],
     "Bottoms":["Jeans", "Sweatpants", "Pants", "Shorts", "Leggings"],
     "Coats and Jackets": ["Coats", "Jackets"],
     "Footwear": ["Sneakers", "Boots", "Other"]
 }
-common_bottom_types = ["Cargo", "Distressed", "Faded", "Embroidered", "Ripped"]
 
-common_bottom_fit = ["Bootcut", "Flare", "High waisted", "Low rise", "Straight leg", "Wide leg"]
 type_options = {
     "Jeans": common_bottom_types,
     "Sweatpants": common_bottom_types,

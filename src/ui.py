@@ -19,6 +19,12 @@ root = tk.Tk()
 root.title("Depop Item Form")
 root.geometry("1200x700")  # Slightly larger window
 root.configure(bg=BG_COLOR)
+i = 0
+label_exists = False
+
+grailed_enabled = tk.BooleanVar(value=False)
+ebay_enabled = tk.BooleanVar(Value=True)
+sheets_enabled = tk.BooleanVar(value=True)
 
 def on_text_change(event, label_name, textbox):
     state.text_inputs_data[label_name] = textbox.get("1.0", "end-1c").strip()
@@ -35,6 +41,7 @@ def on_button_click(category, value):
         state.selected_buttons["Category"] = value
         state.selected_buttons.pop("Subcategory", None)  
         state.selected_buttons.pop("Type", None)  
+
     elif category == "Style":
         if value in state.selected_styles:
             state.selected_styles.remove(value)
@@ -60,7 +67,7 @@ def on_button_click(category, value):
             state.selected_occasion.add(value)
         else:
             return 
-        state.selected_buttons[category] = list(state.selected_occasion)
+        state.selected_buttons[category] = list(state.selcrected_occasion)
 
     elif category == "Color":
         if value in state.selected_color:
@@ -114,7 +121,6 @@ def on_button_click(category, value):
     update_all_buttons()
     check_subcategories() 
 
-
 def update_all_buttons():
     for btn, (category, value) in list(state.all_buttons.items()):  
         if btn.winfo_exists():
@@ -131,7 +137,6 @@ def update_all_buttons():
                 btn.config(bg="white", relief="raised")  
         else:
             del state.all_buttons[btn]  
-
 
 def create_label(title):
     global row_index, label_exists
@@ -170,7 +175,6 @@ def create_label(title):
     state.textboxs.append(textbox)
     label_exists = True
 
-
 def create_button(parent_frame, j, i, category, button_text):
     input_button = tk.Button(
         parent_frame, 
@@ -186,6 +190,147 @@ def create_button(parent_frame, j, i, category, button_text):
     input_button.grid(row=j, column=i, padx=8, pady=6, sticky="w")
     state.all_buttons[input_button] = (category, button_text)
     return input_button
+
+def build_text_inputs():
+    # Remove existing widgets
+    for widget in text_frame.grid_slaves():
+        if int(widget.grid_info()["row"]) > 0:  # Keep the checkboxes in row 0
+            widget.destroy()
+    state.text_inputs_data.clear()
+    state.textbox_dict.clear()
+
+    # Choose which fields to show
+    if grailed_enabled.get():
+        fields = text_input_grailed
+    else:
+        fields = text_input_default
+
+    for i, label in enumerate(fields):
+        text_label = tk.Label(text_frame, text=label, font=("Arial", 15, "bold"))
+        text_label.grid(row=i+1, column=0, sticky="w", padx=10)
+        textbox = tk.Text(text_frame, height=3, width=30, font=("Arial", 10), wrap="word", bd=1, relief="solid")
+        textbox.grid(row=i+1, column=1, sticky="ew", padx=10, pady=5)
+        text_frame.columnconfigure(1, weight=1)
+        state.text_inputs_data[label] = ""
+        state.textbox_dict[label] = textbox
+        textbox.bind("<KeyRelease>", lambda event, name=label, tb=textbox: on_text_change(event, name, tb))
+        textbox.bind("<Tab>", lambda event, tb=textbox: focus_next_widget(state.textbox_dict, event, tb))
+
+def check_subcategories():
+    global row_index
+    for btn in state.subcategory_buttons:
+        btn.destroy()
+        if btn in state.all_buttons:
+            del state.all_buttons[btn]
+    for lbl in state.labels:
+        lbl.destroy()
+    for txt in state.textboxs:
+        txt.destroy()
+    state.labels.clear()
+    state.textboxs.clear()
+    state.subcategory_buttons.clear()  
+
+    if state.selected_buttons.get("Category") == "Tops":
+        create_subcategory("Tops")
+        if state.selected_buttons.get("Subcategory") != "T-shirts":
+            create_label("Top-to-bottom")
+            create_label("Pit-to-pit")
+            create_label("Pit-to-sleeve")            
+        else:
+            create_label("Top-to-bottom")
+            create_label("Pit-to-pit")
+    if state.selected_buttons.get("Category") == "Bottoms":
+        create_subcategory("Bottoms")
+        create_label("Waist")
+        create_label("Inseam")
+        create_label("Rise")
+        if state.selected_buttons.get("Subcategory") == "Jeans" or "Sweatpants" or "Pants" or "Leggings":
+            create_type("Jeans")
+            create_fit("Jeans")
+    
+    if state.selected_buttons.get("Category") == "Coats and Jackets":
+        create_subcategory("Coats and Jackets")    
+        create_label("Top-to-bottom")
+        create_label("Pit-to-pit")
+        create_label("Pit-to-sleeve")   
+        if state.selected_buttons.get("Subcategory") == "Coats":
+            create_type("Coats")
+        if state.selected_buttons.get("Subcategory") == "Jackets":
+            create_type("Jackets")
+    
+    if state.selected_buttons.get("Category") == "Footwear":
+        create_subcategory("Footwear")
+
+        if state.selected_buttons.get("Subcategory") == "Boots":
+            create_type("Boots")
+        if state.selected_buttons.get("Subcategory") == "Sneakers":
+            create_type("Sneakers")
+
+def create_subcategory(clothing_category):
+    global row_index
+    col_index = 1
+    row_index += 1
+    for subcategory in subcategory_options[clothing_category]:
+        btn = create_button(button_frame, row_index, col_index, "Subcategory", subcategory)
+        state.subcategory_buttons.append(btn)
+        state.all_buttons[btn] = ("Subcategory", subcategory)
+        col_index += 1
+    update_all_buttons()
+
+def create_type(clothing_type):
+    global row_index
+    col_index = 1
+    row_index += 1
+    for type in type_options[clothing_type]:
+        btn = create_button(button_frame, row_index, col_index, "Type", type)
+        state.subcategory_buttons.append(btn)
+        state.all_buttons[btn] = ("Type", type)
+        col_index += 1
+    update_all_buttons()
+
+def create_fit(clothing_type):
+    global row_index
+    col_index = 1
+    row_index += 1
+    for fit in fit_options[clothing_type]:
+        btn = create_button(button_frame, row_index, col_index, "Fit", fit)
+        state.subcategory_buttons.append(btn)
+        state.all_buttons[btn] = ("Fit", fit)
+        col_index += 1
+    update_all_buttons()  
+
+def on_submit():
+    if sheets_enabled.get() == True:
+        write_to_sheets(state.text_inputs_data.get("Bought For Price"), state.text_inputs_data.get("Title"))
+    automate_depop_listing(state.selected_buttons, state.text_inputs_data)
+
+    if grailed_enabled.get() == True:
+        automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
+
+    # Reset all button states
+    for btn, (category, value) in list(state.all_buttons.items()):
+        if btn.winfo_exists():
+            btn.config(bg=BUTTON_COLOR, relief="raised")  # Reset to default button appearance
+    
+    # Clear all selected values
+    state.selected_buttons.clear()
+    state.selected_styles.clear()
+    state.selected_types.clear()
+    state.selected_fit.clear()
+    state.selected_occasion.clear()
+    state.selected_color.clear()
+    state.selected_materials.clear()
+    
+    # Clear all text inputs
+    for textbox in state.textbox_dict.values():
+        if textbox.winfo_exists():
+            textbox.delete("1.0", "end")
+    
+    # Update button states and check subcategories
+    update_all_buttons()
+    check_subcategories()
+    
+    print("Form reset complete")
 
 # Create main container with padding
 main_container = tk.Frame(root, bg=BG_COLOR, padx=20, pady=20)
@@ -226,36 +371,18 @@ button_frame = tk.LabelFrame(main_frame, text="Item Attributes", font=(FONT_FAMI
                            bg=BG_COLOR, fg=TEXT_COLOR, padx=15, pady=15)
 button_frame.pack(fill="x", padx=10, pady=10)
 
-i = 0
-label_exists = False
-
-grailed_enabled = tk.BooleanVar(value=False)
-sheets_enabled = tk.BooleanVar(value=True)
-
-def build_text_inputs():
-    # Remove existing widgets
-    for widget in text_frame.grid_slaves():
-        if int(widget.grid_info()["row"]) > 0:  # Keep the checkboxes in row 0
-            widget.destroy()
-    state.text_inputs_data.clear()
-    state.textbox_dict.clear()
-
-    # Choose which fields to show
-    if grailed_enabled.get():
-        fields = text_input_grailed
-    else:
-        fields = text_input_default
-
-    for i, label in enumerate(fields):
-        text_label = tk.Label(text_frame, text=label, font=("Arial", 15, "bold"))
-        text_label.grid(row=i+1, column=0, sticky="w", padx=10)
-        textbox = tk.Text(text_frame, height=3, width=30, font=("Arial", 10), wrap="word", bd=1, relief="solid")
-        textbox.grid(row=i+1, column=1, sticky="ew", padx=10, pady=5)
-        text_frame.columnconfigure(1, weight=1)
-        state.text_inputs_data[label] = ""
-        state.textbox_dict[label] = textbox
-        textbox.bind("<KeyRelease>", lambda event, name=label, tb=textbox: on_text_change(event, name, tb))
-        textbox.bind("<Tab>", lambda event, tb=textbox: focus_next_widget(state.textbox_dict, event, tb))
+ebay_checkbox = tk.Checkbutton(
+    text_frame,
+    text="Draft on Ebay?",
+    variable=ebay_enabled,
+    font=(FONT_FAMILY, 15, "bold"),
+    bg=BG_COLOR,
+    fg=TEXT_COLOR,
+    selectcolor=BG_COLOR,
+    activebackground=BG_COLOR,
+    activeforeground=TEXT_COLOR,
+    command=build_text_inputs
+)
 
 grailed_checkbox = tk.Checkbutton(
     text_frame,
@@ -281,14 +408,15 @@ sheets_checkbox = tk.Checkbutton(
     activebackground=BG_COLOR,
     activeforeground=TEXT_COLOR
 )
+
 sheets_checkbox.grid(row=0, column=0, sticky="w", padx=10, pady=(0, 5))
 grailed_checkbox.grid(row=0, column=1, sticky="w", padx=10, pady=(0, 5))
-# Shift the rest of the item fields down by starting their row at 1
+ebay_checkbox.grid(row = 0, column=2, stick="w", padx=10, pady=(0, 5))
+
 if grailed_enabled.get() == True:
     text_input = text_input_grailed
 else:
     text_input = text_input_default
-
 
 for i in range(len(text_input)):
     text_label = tk.Label(text_frame, text=text_input[i], font=("Arial", 15, "bold"))
@@ -318,124 +446,6 @@ for key, values in options.items():
             col_index += 1
     row_index += 1
 
-        
-def check_subcategories():
-    global row_index
-    for btn in state.subcategory_buttons:
-        btn.destroy()
-        if btn in state.all_buttons:
-            del state.all_buttons[btn]
-    for lbl in state.labels:
-        lbl.destroy()
-    for txt in state.textboxs:
-        txt.destroy()
-    state.labels.clear()
-    state.textboxs.clear()
-    state.subcategory_buttons.clear()  
-
-    if state.selected_buttons.get("Category") == "Tops":
-        create_subcategory("Tops")
-        if state.selected_buttons.get("Subcategory") != "T-shirts":
-            create_label("Top-to-bottom")
-            create_label("Pit-to-pit")
-            create_label("Pit-to-sleeve")            
-        else:
-            create_label("Top-to-bottom")
-            create_label("Pit-to-pit")
-    if state.selected_buttons.get("Category") == "Bottoms":
-        create_subcategory("Bottoms")
-        create_label("Waist")
-        create_label("Inseam")
-        create_label("Rise")
-        if state.selected_buttons.get("Subcategory"):
-            create_type(state.selected_buttons.get("Subcategory"))
-            create_fit(state.selected_buttons.get("Subcategory"))
-    
-    if state.selected_buttons.get("Category") == "Coats and Jackets":
-        create_subcategory("Coats and Jackets")    
-        create_label("Top-to-bottom")
-        create_label("Pit-to-pit")
-        create_label("Pit-to-sleeve")   
-        if state.selected_buttons.get("Subcategory") == "Coats":
-            create_type("Coats")
-        if state.selected_buttons.get("Subcategory") == "Jackets":
-            create_type("Jackets")
-    
-    if state.selected_buttons.get("Category") == "Footwear":
-        create_subcategory("Footwear")
-        #print("Creating Size_text field")  
-
-        if state.selected_buttons.get("Subcategory") == "Boots":
-            create_type("Boots")
-        if state.selected_buttons.get("Subcategory") == "Sneakers":
-            create_type("Sneakers")
-
-def create_subcategory(clothing_category):
-    global row_index
-    col_index = 1
-    row_index += 1
-    for subcategory in subcategory_options[clothing_category]:
-        btn = create_button(button_frame, row_index, col_index, "Subcategory", subcategory)
-        state.subcategory_buttons.append(btn)
-        state.all_buttons[btn] = ("Subcategory", subcategory)  # ✅ Ensure tracking in state.all_buttons
-        col_index += 1
-    update_all_buttons()  # ✅ Refresh button colors after creation
-
-def create_type(clothing_type):
-    global row_index
-    col_index = 1
-    row_index += 1
-    for type in type_options[clothing_type]:
-        btn = create_button(button_frame, row_index, col_index, "Type", type)
-        state.subcategory_buttons.append(btn)
-        state.all_buttons[btn] = ("Type", type)  # ✅ Ensure tracking in state.all_buttons
-        col_index += 1
-    update_all_buttons()  # ✅ Refresh button colors after creation
-
-def create_fit(clothing_type):
-    global row_index
-    col_index = 1
-    row_index += 1
-    for fit in fit_options[clothing_type]:
-        btn = create_button(button_frame, row_index, col_index, "Fit", fit)
-        state.subcategory_buttons.append(btn)
-        state.all_buttons[btn] = ("Fit", fit)  # ✅ Ensure tracking in state.all_buttons
-        col_index += 1
-    update_all_buttons()  # ✅ Refresh button colors after creation
-
-def on_submit():
-    if sheets_enabled.get() == True:
-        write_to_sheets(state.text_inputs_data.get("Bought For Price"), state.text_inputs_data.get("Title"))
-    automate_depop_listing(state.selected_buttons, state.text_inputs_data)
-
-    if grailed_enabled.get() == True:
-        automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
-
-    # Reset all button states
-    for btn, (category, value) in list(state.all_buttons.items()):
-        if btn.winfo_exists():
-            btn.config(bg=BUTTON_COLOR, relief="raised")  # Reset to default button appearance
-    
-    # Clear all selected values
-    state.selected_buttons.clear()
-    state.selected_styles.clear()
-    state.selected_types.clear()
-    state.selected_fit.clear()
-    state.selected_occasion.clear()
-    state.selected_color.clear()
-    state.selected_materials.clear()
-    
-    # Clear all text inputs
-    for textbox in state.textbox_dict.values():
-        if textbox.winfo_exists():
-            textbox.delete("1.0", "end")
-    
-    # Update button states and check subcategories
-    update_all_buttons()
-    check_subcategories()
-    
-    print("Form reset complete")
-
 # Create submit button frame
 submit_frame = tk.Frame(main_frame, bg=BG_COLOR)
 submit_frame.pack(fill="x", padx=10, pady=20)
@@ -453,7 +463,6 @@ submit_button = tk.Button(
 )
 submit_button.pack(pady=10)
 
-# After creating the checkboxes in text_frame:
 build_text_inputs()
 
 root.mainloop()

@@ -145,19 +145,22 @@ def automate_depop_listing(selected_buttons, text_input):
         )
         if subcategory in options.subcategory_options.get(category, []):
             subcategory_input.send_keys(subcategory)
+            if subcategory == "Pants":
+                subcategory_input.send_keys(Keys.ARROW_DOWN)
+
+            elif subcategory == "Shirts":
+                subcategory_input.send_keys(Keys.ARROW_DOWN)
+                subcategory_input.send_keys(Keys.ARROW_DOWN)
             subcategory_input.send_keys(Keys.ENTER)
         else:
-            print("Error, subcategory not recognized")
+            print("[DEBUG] Error, subcategory not recognized")
     except Exception as e:
         print(f"Subcategory submission error: {e}")
 
     try: 
         #All tops don't have a "type" options, everything else does. 
         if category != "Tops":
-            print("[DEBUG] category is not 'Tops', proceeding with type options logic.")
-        else:
-            print("[DEBUG] category is 'Tops', skipping type options logic.")
-            
+            print("[DEBUG] category is not 'Tops', proceeding with type options logic.")           
             #Type Jeans/Sweatpants/Pants/Leggings (If Applicable)
             if subcategory in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
                 print("[DEBUG] subcategory is in ['Jeans', 'Sweatpants', 'Pants', 'Leggings'], proceeding with type options logic.")
@@ -189,7 +192,6 @@ def automate_depop_listing(selected_buttons, text_input):
                 for item in item_type:
                     type_input.send_keys(item)
                     type_input.send_keys(Keys.ENTER)
-                
             if subcategory == "Jackets":
                 type_input = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, "jacket-type-attribute__select"))
@@ -215,7 +217,8 @@ def automate_depop_listing(selected_buttons, text_input):
                 for item in item_type:
                     type_input.send_keys(item)
                     type_input.send_keys(Keys.ENTER)
-                    
+        else:
+            print("[DEBUG] category is 'Tops', skipping type options logic.")   
     except Exception as e:
         print(f"Subcategory submission error: {e}")
 
