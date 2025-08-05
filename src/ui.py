@@ -23,7 +23,7 @@ i = 0
 label_exists = False
 
 grailed_enabled = tk.BooleanVar(value=False)
-ebay_enabled = tk.BooleanVar(Value=True)
+ebay_enabled = tk.BooleanVar(value=True)
 sheets_enabled = tk.BooleanVar(value=True)
 
 def on_text_change(event, label_name, textbox):
@@ -67,7 +67,7 @@ def on_button_click(category, value):
             state.selected_occasion.add(value)
         else:
             return 
-        state.selected_buttons[category] = list(state.selcrected_occasion)
+        state.selected_buttons[category] = list(state.selected_occasion)
 
     elif category == "Color":
         if value in state.selected_color:
@@ -244,7 +244,7 @@ def check_subcategories():
         create_label("Waist")
         create_label("Inseam")
         create_label("Rise")
-        if state.selected_buttons.get("Subcategory") == "Jeans" or "Sweatpants" or "Pants" or "Leggings":
+        if state.selected_buttons.get("Subcategory") in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
             create_type("Jeans")
             create_fit("Jeans")
     

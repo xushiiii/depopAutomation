@@ -171,8 +171,10 @@ def automate_depop_listing(selected_buttons, text_input):
                     type_input.send_keys(item)
                     type_input.send_keys(Keys.ENTER)
                 
-                if fit_options in options.common_bottom_types:
-                    print("[DEBUG] fit_options is in options.common_bottom_types")
+                print("[DEBUG] fit_options:", fit_options)
+                print("[DEBUG] options.common_bottom_fit:", options.common_bottom_fit)
+                if any(fit in options.common_bottom_fit for fit in fit_options):
+                    print("[DEBUG] At least one fit_option is in options.common_bottom_fit")
                     fit_input = WebDriverWait(driver, 10).until(
                         EC.presence_of_element_located((By.ID, "bottom-style-attribute__select"))
                     )
@@ -180,7 +182,7 @@ def automate_depop_listing(selected_buttons, text_input):
                         fit_input.send_keys(item)
                         fit_input.send_keys(Keys.ENTER)
                 else:
-                    print("[DEBUG] fit_options is NOT in options.common_bottom_types")
+                    print("[DEBUG] No fit_option is in options.common_bottom_fit")
             else:
                 print("[DEBUG] subcategory is not in ['Jeans', 'Sweatpants', 'Pants', 'Leggings'], skipping type options logic.")
             #Type Jacket and Coats (If Applicable)
