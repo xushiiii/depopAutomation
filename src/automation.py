@@ -73,7 +73,8 @@ def automate_depop_listing(selected_buttons, text_input):
             regular_description = (
                 f"Pit-to-pit: {pit2pit}\n"
                 f"Top-to-bottom: {top2bot}\n\n"
-                "Open to serious offers!\n"
+                "Please message me if shipping costs seem off.\n"
+                "Open to serious offers!\n\n"
                 "All sales are final\n\n"
                 f"{hashtags}"
             )
@@ -82,13 +83,15 @@ def automate_depop_listing(selected_buttons, text_input):
                 f"Waist: {waist}\n"
                 f"Inseam: {inseam}\n"
                 f"Rise: {rise}\n\n"
-                "Open to serious offers!\n"
+                "Please message me if shipping costs seem off.\n\n"
+                "Open to serious offers!\n\n"
                 "All sales are final\n\n"
                 f"{hashtags}"
             )
         elif category == "Footwear":
             regular_description = (
-                "Open to serious offers!\n"
+                "Please message me if shipping costs seem off.\n\n"
+                "Open to serious offers!\n\n"
                 "All sales are final\n\n"
                 f"{hashtags}"
             )
@@ -97,7 +100,8 @@ def automate_depop_listing(selected_buttons, text_input):
                 f"Pit-to-pit: {pit2pit}\n"
                 f"Top-to-bottom: {top2bot}\n"
                 f"Pit-to-sleeve: {pit2sleeve}\n\n"
-                "Open to serious offers!\n"
+                "Please message me if shipping costs seem off.\n"
+                "Open to serious offers!\n\n"
                 "All sales are final\n\n"
                 f"{hashtags}"
             )

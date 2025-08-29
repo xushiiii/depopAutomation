@@ -1,7 +1,7 @@
 common_bottom_types = ["Cargo", "Distressed", "Faded", "Embroidered", "Ripped"]
 common_bottom_fit = ["Bootcut", "Flare", "High waisted", "Low rise", "Straight leg", "Wide leg"]
-text_input_grailed = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Country of Origin", "Size"]
-text_input_default = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size"]
+text_input_grailed = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Country of Origin", "Size", "Location"]
+text_input_default = ["Title", "Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size", "Location"]
 
 color_options = ["Black", "Grey", "White", "Brown", "Tan", "Cream", "Yellow", "Red", "Burgundy", "Orange", "Pink", "Purple", "Blue", "Navy", "Green", "Khaki", "Multi", "Silver", "Gold"]
 package_options = ["XXS", "XS", "S", "M", "L", "XL"]

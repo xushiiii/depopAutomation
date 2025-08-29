@@ -301,7 +301,12 @@ def create_fit(clothing_type):
 
 def on_submit():
     if sheets_enabled.get() == True:
-        write_to_sheets(state.text_inputs_data.get("Bought For Price"), state.text_inputs_data.get("Title"))
+        write_to_sheets(
+            state.text_inputs_data.get("Bought For Price"),  # price
+            state.text_inputs_data.get("Title"),             # description
+            state.text_inputs_data.get("Location"),          # location  
+            state.selected_buttons.get("Subcategory")        # category
+        )    
     automate_depop_listing(state.selected_buttons, state.text_inputs_data)
 
     if grailed_enabled.get() == True:
