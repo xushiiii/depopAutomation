@@ -1,7 +1,7 @@
 import tkinter as tk
 from .helpers.tab_nav import focus_next_widget
 from .automation import automate_depop_listing
-from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options, text_input_grailed, text_input_default
+from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options, text_input_grailed, text_input_default, text_input_ebay
 from . import state
 from .grailedAutomation import automate_grailed_listing
 from src.google_sheets import write_to_sheets
@@ -305,7 +305,8 @@ def on_submit():
             state.text_inputs_data.get("Bought For Price"),  # price
             state.text_inputs_data.get("Title"),             # description
             state.text_inputs_data.get("Location"),          # location  
-            state.selected_buttons.get("Subcategory")        # category
+            state.selected_buttons.get("Category"),        # category
+            state.selected_buttons.get("Subcategory")      # subcategory
         )    
     automate_depop_listing(state.selected_buttons, state.text_inputs_data)
 
@@ -422,7 +423,11 @@ if grailed_enabled.get() == True:
     text_input = text_input_grailed
 else:
     text_input = text_input_default
-
+if ebay_enabled.get() == True:
+    text_input = text_input_ebay
+else:
+    text_input = text_input_default
+    
 for i in range(len(text_input)):
     text_label = tk.Label(text_frame, text=text_input[i], font=("Arial", 15, "bold"))
     text_label.grid(row = i+1, column=0, sticky="w", padx=10)

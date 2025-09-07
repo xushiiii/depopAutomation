@@ -17,8 +17,14 @@ SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-104
 credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 client = gspread.authorize(credentials)
 sheet = client.open("Reselling").sheet1  
-def write_to_sheets(price, description, location, category):
+def write_to_sheets(price, description, location, category, subcategory):
     price_float = float(price)
     col_values = sheet.col_values(1)
     next_row = len(col_values) + 1
+    if category == "Footwear":
+        category = "Shoes"
+    if category == "Tops":
+        if subcategory != "T-shirts" or subcategory != "Other":
+            category = "Midlayer"
+    
     sheet.update(range_name=f"A{next_row}:D{next_row}", values=[[description, category, location, price_float]])
