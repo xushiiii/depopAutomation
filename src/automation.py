@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from src.google_sheets import write_to_sheets
 from selenium.webdriver.edge.options import Options
+from selenium.webdriver.edge.service import Service
+
 import src.options as options
 import subprocess
 
@@ -49,8 +51,9 @@ def automate_depop_listing(selected_buttons, text_input):
     fit_options = selected_buttons.get("Fit", [])
     occasion_options = selected_buttons.get("Occasion", [])
     package_size = selected_buttons.get("Package Size", [])
+    location = selected_buttons.get("Location", "")
 
-    #write_to_sheets(price, title)
+    #write_to_sheets(price, title, location, category, subcategory)
 
     edge_options = Options()
     edge_options.use_chromium = True
@@ -62,7 +65,15 @@ def automate_depop_listing(selected_buttons, text_input):
     #PC EDGE OPTIONS:
     edge_options.add_argument("user-data-dir=C:\\Users\\Taylor Xu\\AppData\\Local\\Microsoft\\Edge\\User Data")
     edge_options.add_argument("profile-directory=Default")
-    driver = webdriver.Edge(options=edge_options)
+    # Try WebDriver Manager first, fallback to manual if it fails
+    try:
+        service = Service(EdgeChromiumDriverManager().install())
+        driver = webdriver.Edge(service=service, options=edge_options)
+    except Exception as e:
+        print(f"WebDriver Manager failed: {e}")
+        print("Falling back to manual WebDriver path...")
+        service = Service(r"C:\Users\Taylor Xu\Downloads\edgedriver_win64\msedgedriver.exe")
+        driver = webdriver.Edge(service=service, options=edge_options)
     driver.get("https://www.depop.com/products/create")
 
     try:
