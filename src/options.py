@@ -6,36 +6,37 @@ text_input_ebay = ["Title", "Ebay Title","Description", "Hashtags", "Bought For 
 color_options = ["Black", "Grey", "White", "Brown", "Tan", "Cream", "Yellow", "Red", "Burgundy", "Orange", "Pink", "Purple", "Blue", "Navy", "Green", "Khaki", "Multi", "Silver", "Gold"]
 package_options = ["XXS", "XS", "S", "M", "L", "XL"]
 options = {
-    "Occasion": ["Casual", "Festival", "Going Out", "Special Occassion", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
+    "Occasion": ["Casual", "Festival", "Going out", "Special Occassion", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
     "Material": ["Acrylic", "Canvas", "Cotton", "Polyester", "Leather", "Nylon", "Silk", "Wool"],
-    "Condition": ["Brand New", "Like New", "Used - Excellent", "Used - Good", "Used - Fair"],
+    "Condition": ["Brand new", "Like new", "Used - Excellent", "Used - Good", "Used - Fair"],
     "Package Size": ["XXS", "XS", "S", "M", "L", "XL"],
     "Color": ["Black", "Grey", "White", "Brown", "Tan", "Cream", "Yellow", "Red", "Burgundy", "Orange", "Pink", "Purple", "Blue", "Navy", "Green", "Khaki", "Multi", "Silver", "Gold"],
     "Gender": ["Male", "Female"],
     "Source": ["Vintage", "Preloved", "Deadstock"],
     "Age": ["Modern", "00s", "90s", "80s", "70s"],
     "Style": ["Streetwear", "Sportswear", "Goth", "Retro", "Boho", "Western", "Indie", "Skater", "Grunge", "Minimalist", "Preppy", "Casual", "Utility", "Cottage", "Y2K", "Biker", "Gorpcore", "Coquette"],
-    "Category": ["Tops", "Bottoms", "Coats and Jackets", "Footwear"]
+    "Category": ["Tops", "Bottoms", "Coats and jackets", "Footwear"]
 }
 
 subcategory_options = {
-    "Tops": ["T-shirts", "Hoodies", "Sweatshirts", "Sweaters", "Cardigans", "Shirts", "Polo Shirts", "Other"],
-    "Bottoms":["Jeans", "Sweatpants", "Pants", "Shorts", "Leggings"],
-    "Coats and Jackets": ["Coats", "Jackets"],
-    "Footwear": ["Sneakers", "Boots", "Other"]
+    "Tops": ["T-shirts", "Hoodies", "Sweatshirts", "Jumpers", "Cardigans", "Shirts", "Polo Shirts", "Other"],
+    "Bottoms":["Jeans", "Sweatpants", "Trousers", "Shorts", "Leggings"],
+    "Coats and jackets": ["Coats", "Jackets"],
+    "Footwear": ["Trainers", "Boots", "Loafers", "Other"]
 }
 
 type_options = {
     "Jeans": common_bottom_types,
     "Sweatpants": common_bottom_types,
-    "Pants": common_bottom_types,
+    "Trousers": common_bottom_types,
     "Coats": ["Overcoat", "Puffer", "Raincoat"],
     "Jackets": ["Bomber", "Lightweight", "Shacket", "Varsity", "Windbreaker"],
-    "Sneakers": ["Basketball", "Gym", "Lifestyle", "Running", "Skateboarding", "Tennis"],
-    "Boots": ["Ankle", "Chelsea", "Biker", "Military", "Platform"]
+    "Trainers": ["Basketball", "Gym", "Lifestyle", "Running", "Skateboarding", "Tennis"],
+    "Boots": ["Ankle", "Chelsea", "Biker", "Military", "Platform"],
+    "Loafers": ["Buckle", "Plain", "Chunky"]
 }
 fit_options = {
     "Jeans": common_bottom_fit,
     "Sweatpants": common_bottom_fit,
-    "Pants": common_bottom_fit
+    "Trousers": common_bottom_fit
 } 

@@ -1,10 +1,14 @@
 import tkinter as tk
+import threading
 from .helpers.tab_nav import focus_next_widget
+#from .depop_automation import automate_depop_listing
 from .automation import automate_depop_listing
 from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options, text_input_grailed, text_input_default, text_input_ebay
 from . import state
 from .grailedAutomation import automate_grailed_listing
 from src.google_sheets import write_to_sheets
+from src.main import create_depop_draft
+#from src.depop_automation import main 
 
 # Style Configuration
 BG_COLOR = "#f0f0f0"  # Light gray background
@@ -244,12 +248,12 @@ def check_subcategories():
         create_label("Waist")
         create_label("Inseam")
         create_label("Rise")
-        if state.selected_buttons.get("Subcategory") in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
+        if state.selected_buttons.get("Subcategory") in ["Jeans", "Sweatpants", "Trousers", "Leggings"]:
             create_type("Jeans")
             create_fit("Jeans")
     
-    if state.selected_buttons.get("Category") == "Coats and Jackets":
-        create_subcategory("Coats and Jackets")    
+    if state.selected_buttons.get("Category") == "Coats and jackets":
+        create_subcategory("Coats and jackets")    
         create_label("Top-to-bottom")
         create_label("Pit-to-pit")
         create_label("Pit-to-sleeve")   
@@ -263,53 +267,73 @@ def check_subcategories():
 
         if state.selected_buttons.get("Subcategory") == "Boots":
             create_type("Boots")
-        if state.selected_buttons.get("Subcategory") == "Sneakers":
-            create_type("Sneakers")
+        if state.selected_buttons.get("Subcategory") == "Trainers":
+            create_type("Trainers")
+        if state.selected_buttons.get("Subcategory") == "Loafers":
+            create_type("Loafers")
 
 def create_subcategory(clothing_category):
     global row_index
     col_index = 1
-    row_index += 1
+    current_row = row_index + 1
     for subcategory in subcategory_options[clothing_category]:
-        btn = create_button(button_frame, row_index, col_index, "Subcategory", subcategory)
+        btn = create_button(button_frame, current_row, col_index, "Subcategory", subcategory)
         state.subcategory_buttons.append(btn)
         state.all_buttons[btn] = ("Subcategory", subcategory)
-        col_index += 1
+        if col_index >= 5:
+            col_index = 1
+            current_row += 1
+        else:
+            col_index += 1
+    row_index = current_row
     update_all_buttons()
 
 def create_type(clothing_type):
     global row_index
     col_index = 1
-    row_index += 1
+    current_row = row_index + 1
     for type in type_options[clothing_type]:
-        btn = create_button(button_frame, row_index, col_index, "Type", type)
+        btn = create_button(button_frame, current_row, col_index, "Type", type)
         state.subcategory_buttons.append(btn)
         state.all_buttons[btn] = ("Type", type)
-        col_index += 1
+        if col_index >= 5:
+            col_index = 1
+            current_row += 1
+        else:
+            col_index += 1
+    row_index = current_row
     update_all_buttons()
 
 def create_fit(clothing_type):
     global row_index
     col_index = 1
-    row_index += 1
+    current_row = row_index + 1
     for fit in fit_options[clothing_type]:
-        btn = create_button(button_frame, row_index, col_index, "Fit", fit)
+        btn = create_button(button_frame, current_row, col_index, "Fit", fit)
         state.subcategory_buttons.append(btn)
         state.all_buttons[btn] = ("Fit", fit)
-        col_index += 1
+        if col_index >= 5:
+            col_index = 1
+            current_row += 1
+        else:
+            col_index += 1
+    row_index = current_row
     update_all_buttons()  
 
 def on_submit():
-    #if sheets_enabled.get() == True:
-        #continue
-        #write_to_sheets(
-        #    state.text_inputs_data.get("Bought For Price"),  # price
-        #    state.text_inputs_data.get("Title"),             # description
-        #    state.text_inputs_data.get("Location"),          # location  
-        #       state.selected_buttons.get("Category"),        # category
-        #    state.selected_buttons.get("Subcategory")      # subcategory
-        #)    
-    automate_depop_listing(state.selected_buttons, state.text_inputs_data)
+    if sheets_enabled.get() == True:
+        write_to_sheets(
+            state.text_inputs_data.get("Bought For Price"),  # price
+            state.text_inputs_data.get("Title"),             # description
+            state.text_inputs_data.get("Location"),          # location  
+            state.selected_buttons.get("Category"),        # category
+            state.selected_buttons.get("Subcategory")      # subcategory
+        )    
+    threading.Thread(
+        target=create_depop_draft,
+        args=(state.selected_buttons.copy(), state.text_inputs_data.copy()),
+        daemon=True
+    ).start()
 
     if grailed_enabled.get() == True:
         automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
@@ -446,16 +470,17 @@ row_index = len(text_input) + 1  # Update row_index to account for the extra row
 
 for key, values in options.items():
     col_index = 1
+    current_row = row_index
     input_label = tk.Label(button_frame, text=key, font=("Arial", 15, "bold"))
     input_label.grid(row = row_index, column=0, sticky="w", padx=10, pady=5)
     for value in options[key]:
-        create_button(button_frame, row_index, col_index, key, value)
+        create_button(button_frame, current_row, col_index, key, value)
         if col_index >= 5:
             col_index = 1
-            row_index += 1
+            current_row += 1
         else:
             col_index += 1
-    row_index += 1
+    row_index = current_row + 1
 
 # Create submit button frame
 submit_frame = tk.Frame(main_frame, bg=BG_COLOR)

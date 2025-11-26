@@ -31,7 +31,6 @@ def automate_depop_listing(selected_buttons, text_input):
     top2bot = text_input.get("Top-to-bottom", "")
     pit2sleeve = text_input.get("Pit-to-sleeve", "")
     waist = text_input.get("Waist", "")
-    leg_opening = text_input.get("Leg Opening", "")
     rise = text_input.get("Rise", "")
     inseam = text_input.get("Inseam", "")
     hashtags = text_input.get("Hashtags", "")
@@ -52,6 +51,24 @@ def automate_depop_listing(selected_buttons, text_input):
     occasion_options = selected_buttons.get("Occasion", [])
     package_size = selected_buttons.get("Package Size", [])
     location = selected_buttons.get("Location", "")
+    
+    # Debug print statements
+    print("=== DEBUG VALUES ===")
+    print(f"condition: {condition}")
+    print(f"color: {color}")
+    print(f"gender: {gender}")
+    print(f"category: {category}")
+    print(f"subcategory: {subcategory}")
+    print(f"item_type: {item_type}")
+    print(f"source: {source}")
+    print(f"material: {material}")
+    print(f"age: {age}")
+    print(f"style: {style}")
+    print(f"fit_options: {fit_options}")
+    print(f"occasion_options: {occasion_options}")
+    print(f"package_size: {package_size}")
+    print(f"location: {location}")
+    print("===================")
 
     #write_to_sheets(price, title, location, category, subcategory)
 
@@ -74,7 +91,7 @@ def automate_depop_listing(selected_buttons, text_input):
         print("Falling back to manual WebDriver path...")
         service = Service(r"C:\Users\Taylor Xu\Downloads\edgedriver_win64\msedgedriver.exe")
         driver = webdriver.Edge(service=service, options=edge_options)
-    driver.get("https://www.depop.com/products/create")
+        driver.get("https://www.depop.com/products/create")
 
     try:
         description_box = WebDriverWait(driver, 10).until(
@@ -111,7 +128,6 @@ def automate_depop_listing(selected_buttons, text_input):
                 f"Pit-to-pit: {pit2pit}\n"
                 f"Top-to-bottom: {top2bot}\n"
                 f"Pit-to-sleeve: {pit2sleeve}\n\n"
-                "Please message me if shipping costs seem off.\n"
                 "Open to serious offers!\n\n"
                 "All sales are final\n\n"
                 f"{hashtags}"
@@ -136,19 +152,51 @@ def automate_depop_listing(selected_buttons, text_input):
         print(f"Failed to find description box: {e}")
     
     try:
-        # Category
-        category_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "listingCategories__category__select"))
+        dropdown_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "group-toggle-button"))
         )
-        # Input the selected category
-        category_input.send_keys(category)
-
-        # If the item is for women 
-        if gender == "Female":
-            category_input.send_keys(Keys.ARROW_DOWN)
-
-        # Else: Male, no keys will default to Male 
-        category_input.send_keys(Keys.ENTER)
+        dropdown_button.click()
+        if gender == "Male":
+            match category:
+                case "Tops":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-0"))  
+                    )
+                case "Bottoms":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-1"))  
+                    )
+                case "Coats and Jackets":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-2"))  
+                    )
+                case "Footwear":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-5"))  
+                    )
+                case _:
+                    print("[DEBUG] Error, category not recognized")
+        elif gender == "Female":
+            match category:
+                case "Tops":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-11"))  
+                    )
+                case "Bottoms":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-12"))  
+                    )
+                case "Coats and Jackets":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-14"))  
+                    )
+                case "Footwear":
+                    option = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.ID, "group-item-17"))  
+                    )
+                case _:
+                    print("[DEBUG] Error, category not recognized")
+        option.click()
 
     except Exception as e:
         print(f"Category submission error: {e}")
@@ -156,8 +204,12 @@ def automate_depop_listing(selected_buttons, text_input):
     try: 
         # Subcategory
         subcategory_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "listingCategories__subcategory__select"))
+            EC.element_to_be_clickable((By.ID, "productType-input"))
         )
+        subcategory_input.click()
+        subcategory_input.clear()
+        subcategory_input.send_keys("TEST")
+
         if subcategory in options.subcategory_options.get(category, []):
             subcategory_input.send_keys(subcategory)
             if subcategory == "Pants":
@@ -166,6 +218,7 @@ def automate_depop_listing(selected_buttons, text_input):
             elif subcategory == "Shirts":
                 subcategory_input.send_keys(Keys.ARROW_DOWN)
                 subcategory_input.send_keys(Keys.ARROW_DOWN)
+
             subcategory_input.send_keys(Keys.ENTER)
         else:
             print("[DEBUG] Error, subcategory not recognized")
@@ -177,7 +230,7 @@ def automate_depop_listing(selected_buttons, text_input):
         if category != "Tops":
             print("[DEBUG] category is not 'Tops', proceeding with type options logic.")           
             #Type Jeans/Sweatpants/Pants/Leggings (If Applicable)
-            if subcategory in ["Jeans", "Sweatpants", "Pants", "Leggings"]:
+            if subcategory in ["Jeans", "Sweatpants", "Trousers", "Leggings"]:
                 print("[DEBUG] subcategory is in ['Jeans', 'Sweatpants', 'Pants', 'Leggings'], proceeding with type options logic.")
                 type_input = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.ID, "bottom-fit-attribute__select"))  
@@ -367,45 +420,32 @@ def automate_depop_listing(selected_buttons, text_input):
         print(f"Style submission error: {e}")
 
     # Parcel Size
+    time.sleep(1)  # Small delay before parcel size interaction
     try:
-        parcel_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "shipping__parcelSize__select"))
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "manual__shipping"))
+        ).click()
+
+        manual_shipping_box = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "nationalShippingCost__input"))
         )
-        if package_size == "XXS":
-            parcel_input.send_keys("XXS")
-            parcel_input.send_keys(Keys.ENTER)
-        elif package_size == "XS":
-            parcel_input.send_keys("XS")
-            parcel_input.send_keys(Keys.ARROW_DOWN)
-            parcel_input.send_keys(Keys.ENTER)
-        elif package_size == "S":
-            parcel_input.send_keys("S")
-            parcel_input.send_keys(Keys.ARROW_DOWN)
-            parcel_input.send_keys(Keys.ARROW_DOWN)
-            parcel_input.send_keys(Keys.ENTER)  
-        elif package_size == "M":
-            parcel_input.send_keys("M")
-            parcel_input.send_keys(Keys.ENTER)      
-        elif package_size == "L":
-            parcel_input.send_keys("L")
-            parcel_input.send_keys(Keys.ARROW_DOWN)
-            parcel_input.send_keys(Keys.ARROW_DOWN)
-            parcel_input.send_keys(Keys.ENTER)    
-        elif package_size == "XL":
-            parcel_input.send_keys("XL")
-            parcel_input.send_keys(Keys.ENTER)
-        else:
-            print("Package size was not recognized.")
+        manual_shipping_box.click()
+        manual_shipping_box.send_keys(Keys.CONTROL, "a")
+        manual_shipping_box.send_keys(Keys.DELETE)
+        manual_shipping_box.send_keys("12")
+
 
     except Exception as e:
         print(f"Parcel submission error: {e}")
 
     #Price 
+    time.sleep(1)  # Small delay before price interaction
     try:
         price_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "price__input")) 
         )
         price_input.click()
+        time.sleep(0.3)  # Brief pause after click
         price_input.send_keys(Keys.CONTROL, "a")
         price_input.send_keys(Keys.DELETE)
         price_input.send_keys(listing_price)
@@ -413,6 +453,7 @@ def automate_depop_listing(selected_buttons, text_input):
     except Exception as e:
         print(f"Price selection error: {e}")
     #Draft Submit 
+    time.sleep(1)  # Small delay before draft submit
     try:
         draft_button = WebDriverWait(driver, 10).until(
         EC.element_to_be_clickable((By.CSS_SELECTOR, "#main > form > div.styles__SubmitButtonsContainer-sc-2b412d69-0.hMVIOz > button"))
