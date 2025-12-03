@@ -5,12 +5,20 @@ from selenium.webdriver.edge.service import Service
 import subprocess
 from selenium import webdriver
 import time
-# Use your existing Edge user-data so you stay logged in:
-EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+# DESKTOPUse your existing Edge user-data so you stay logged in:
+#EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+#EDGE_PROFILE_DIR   = "Default"
+
+# LAPTOP Use your existing Edge user-data so you stay logged in:
+EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
 EDGE_PROFILE_DIR   = "Default"
 
-# Path to your local msedgedriver (manual installation)
-EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+# DESKTOP Path to your local msedgedriver (manual installation)
+#EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+
+# LAPTOP Path to your local msedgedriver (manual installation)
+EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+
 # --------------------------------
 def get_driver():
     # Terminate any existing Edge/EdgeDriver instances when starting a new listing

@@ -60,18 +60,18 @@ def create_depop_draft(selected_buttons, text_input):
         # Ensure Category is set to Men - Tops first (so the subcategory list matches your HTML)
         write_description(driver,text_input, selected_buttons)
 
-        select_category(driver, gender, category)
+        select_category(driver, gender, category, subcategory)
 
-        select_subcategory(driver, subcategory)
-
-        close_dropdowns(driver)
-        select_type_from_user_choices(driver, gender, category, subcategory, type)
+        #select_subcategory(driver, subcategory)
 
         close_dropdowns(driver)
-        select_occasion(driver, occasion)
+        #select_type_from_user_choices(driver, gender, category, subcategory, type)
 
         close_dropdowns(driver)
-        select_material(driver, material)
+        #select_occasion(driver, occasion)
+
+        close_dropdowns(driver)
+        #select_material(driver, material)
         
         close_dropdowns(driver)
         select_brand(driver, brand)

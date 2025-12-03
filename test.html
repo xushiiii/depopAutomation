@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>React Mini Demo</title>
+    <!-- React 18 via CDN (for quick demos) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <!-- Babel lets us write JSX right in the browser for demos -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 24px; }
+      .card { border: 1px solid #ddd; padding: 16px; border-radius: 12px; max-width: 520px; }
+      input { padding: 8px; width: 100%; margin: 8px 0; }
+      button { padding: 8px 12px; }
+      ul { padding-left: 20px; }
+      .muted { color: #666; font-size: 0.9rem; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // Child component demonstrating "props"
+      function TodoItem({ todo, onToggle }) {
+        return (
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                checked={todo.done}
+                onChange={() => onToggle(todo.id)}
+              />
+              {" "}
+              <span style={{ textDecoration: todo.done ? "line-through" : "none" }}>
+                {todo.text}
+              </span>
+            </label>
+          </li>
+        );
+      }
+
+      // Main component demonstrating state, events, effects, and list rendering
+      function App() {
+        // "state" with useState
+        const [todos, setTodos] = React.useState([
+          { id: 1, text: "Learn React basics", done: true },
+          { id: 2, text: "Build something small", done: false },
+        ]);
+        const [text, setText] = React.useState("");
+        const [count, setCount] = React.useState(0);
+
+        // "effect" runs after render (e.g., side effects or fetching)
+        React.useEffect(() => {
+          document.title = `Clicked ${count} time${count === 1 ? "" : "s"}`;
+        }, [count]); // runs when `count` changes
+
+        function addTodo(e) {
+          e.preventDefault();
+          const trimmed = text.trim();
+          if (!trimmed) return;
+          setTodos(prev => [
+            ...prev,
+            { id: Date.now(), text: trimmed, done: false }
+          ]);
+          setText("");
+        }
+
+        function toggleTodo(id) {
+          setTodos(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
+        }
+
+        const remaining = todos.filter(t => !t.done).length;
+
+        return (
+          <div className="card">
+            <h1>React Demo</h1>
+
+            {/* Controlled input + form submit */}
+            <form onSubmit={addTodo}>
+              <input
+                placeholder="Add a todo..."
+                value={text}
+                onChange={e => setText(e.target.value)}
+              />
+              <button type="submit">Add</button>
+            </form>
+
+            {/* List rendering + child component with props */}
+            <h3>Todos ({todos.length})</h3>
+            {todos.length === 0 ? (
+              <p className="muted">Nothing here yet—add your first task!</p>
+            ) : (
+              <ul>
+                {todos.map(todo => (
+                  <TodoItem key={todo.id} todo={todo} onToggle={toggleTodo} />
+                ))}
+              </ul>
+            )}
+            <p className="muted">{remaining} remaining</p>
+
+            {/* Event handling + state updates */}
+            <div style={{ marginTop: 12 }}>
+              <button onClick={() => setCount(c => c + 1)}>Clicked {count}</button>
+            </div>
+
+            <p className="muted" style={{ marginTop: 8 }}>
+              Open your browser tab title—notice it updates when you click the button (useEffect).
+            </p>
+          </div>
+        );
+      }
+
+      // React 18 root
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

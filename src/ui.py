@@ -3,12 +3,16 @@ import threading
 from .helpers.tab_nav import focus_next_widget
 #from .depop_automation import automate_depop_listing
 from .automation import automate_depop_listing
-from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, type_options, fit_options, text_input_grailed, text_input_default, text_input_ebay
+from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, text_input_grailed, text_input_default, text_input_ebay
 from . import state
 from .grailedAutomation import automate_grailed_listing
 from src.google_sheets import write_to_sheets
 from src.main import create_depop_draft
 #from src.depop_automation import main 
+
+#fillers
+type_options = None
+fit_options = None
 
 # Style Configuration
 BG_COLOR = "#f0f0f0"  # Light gray background
@@ -292,33 +296,35 @@ def create_type(clothing_type):
     global row_index
     col_index = 1
     current_row = row_index + 1
-    for type in type_options[clothing_type]:
-        btn = create_button(button_frame, current_row, col_index, "Type", type)
-        state.subcategory_buttons.append(btn)
-        state.all_buttons[btn] = ("Type", type)
-        if col_index >= 5:
-            col_index = 1
-            current_row += 1
-        else:
-            col_index += 1
-    row_index = current_row
-    update_all_buttons()
+    if type_options:
+        for type in type_options[clothing_type]:
+            btn = create_button(button_frame, current_row, col_index, "Type", type)
+            state.subcategory_buttons.append(btn)
+            state.all_buttons[btn] = ("Type", type)
+            if col_index >= 5:
+                col_index = 1
+                current_row += 1
+            else:
+                col_index += 1
+        row_index = current_row
+        update_all_buttons()
 
 def create_fit(clothing_type):
     global row_index
     col_index = 1
     current_row = row_index + 1
-    for fit in fit_options[clothing_type]:
-        btn = create_button(button_frame, current_row, col_index, "Fit", fit)
-        state.subcategory_buttons.append(btn)
-        state.all_buttons[btn] = ("Fit", fit)
-        if col_index >= 5:
-            col_index = 1
-            current_row += 1
-        else:
-            col_index += 1
-    row_index = current_row
-    update_all_buttons()  
+    if fit_options:
+        for fit in fit_options[clothing_type]:
+            btn = create_button(button_frame, current_row, col_index, "Fit", fit)
+            state.subcategory_buttons.append(btn)
+            state.all_buttons[btn] = ("Fit", fit)
+            if col_index >= 5:
+                col_index = 1
+                current_row += 1
+            else:
+                col_index += 1
+        row_index = current_row
+        update_all_buttons()  
 
 def on_submit():
     if sheets_enabled.get() == True:

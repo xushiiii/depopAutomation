@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "resellingautomation",
+  "private_key_id": "08445c6cbe98529fa616a9cabab48aeaa73e03c2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQClQWzJNisGdHIn\nyjoE3+Zwfmjb5f2baJFEXLui9bud+2AUxGmqmUD4CTAetpEVNZyqIavgD0DHze6H\nE/HIz7TBlPbIVYHGbgbwmm1qMMgBXIOkVyEwZ6q5/s+xXmTwkcGovnyx8qLkWNgO\nT95fG8wgmaBf7hqtP2zbeJ6paJnZLSDUmrfPX8JI84+WTusZt258w6jWW3SECu3p\nHaOVjmMxmRyaHWF6ZYiuIu+UcA60ALEn5WUCJ36DWyIMmlUGUYTfrN3Kvk/aBAYB\nXp/9HusnEZGPB71cKRlxL2uTttpiI93bNp99ty29adptQMxhW1EW0+Vn7fIhD2ep\nHxLMvTDzAgMBAAECggEACNicuy5A7vW5NEB5PjbCF8McixDsgRVmGVO7E5+CrWB+\nC/6LoLJwra/7bHMRByKfwhe1VkD0X2Qg4NUESPlqNdnRVnee6WfAZVoCG2brF4kq\nEgtvK/xddKfOp5iW+XqQwR8ZS7YVjcWxVlExZSpdKscugS22YRAxHC2zyJVgQiWe\naomfp1ks8C4SBZ3PvGmJ/efHcFNIdwTDtOka6sOuh3ofWC5tabLQUBuF3UCc0Sk2\nlb9qAeqYIy6aNmzxjAg9YmGsmSyOH24z+hhYvHiKtfN1ar75ngFpGiOzVyYHZm8E\nVEoOd3l7YEUNVG9TXf2ESSt8EkVrQBObTcC8dPKkaQKBgQDb6+NRX5xa4lIgi//o\nsVQtpHgFZMcZ7HBXpDdIftytD3LJ5M8YcduCIRJhi1fINsVtft5j89EwCVtzNtrI\nBgrAdlDfa0hCryGoDR2zArAoa8Tx+iOSXMJ3sbfFSurKJtjRV8C9nUaq0zdFzQBd\nRCxrWLJKgsFgAAf7eBm3eWn/TQKBgQDAXbd1izaTkRXD8au+3P3HPcW1vMaD9biK\nRF+iEhUbYKsSbVBUNBY7ovQghWd1mg2d9WKdxohcgORGbLr0n3kO6hAati8wTBeE\n6fhcM2OJ96J8A8eq9mxfyPQaxeq+mcajBIFIpAmAJTrTkLCmaxE4tJa1FKwWb0en\nZ2HPuWBRPwKBgQCDvMgMxLNKlewQZwzC/Qap2K20vWuvEb0yIsKjAKt8V5axbgjI\nYdvWFa2HFQteecDGGItrYHBc0B4h5CgmTcg/BiDn1MISgAovOrwhsWiIrhXpxadt\nU3eCb8jfvELtGVwj+ucQLphYV/HyNB0VwXLCUv1qOO1RbnNZpdXx3B8suQKBgDfk\ngwOyOV9TDoHqXD6Os2YKusF9YijBYqc6CpdqrZtQ0SP/gxGUOMmHJWu1l0QCSOaW\nf9rb7o8CHFGiEgg1tdTxiVBZkwhzc3n5CWKww8E4pItoBcHU69RA7TxCOVy8DY0c\nJ/xVPTVwm9EQ/2K7RTu2rPtcUEwMdUNctHzIngW9AoGABhGydFXM7CS6vpAdXnn1\nubvbAgsnDa88aqxS+BJvg7H0wc5gNDEOiW8DoIvi7zMg1EH4oWt81ktNqp/W2Pqs\nA0ANOBIg+LRAbLbnH899cz2JPSkTBPynaQj0Bv394MKLPQTh9GXy8Sl6Yzwu3+3f\nmBsGKTtPdz4V5Li8Mab5y+s=\n-----END PRIVATE KEY-----\n",
+  "client_email": "taylorxudepop@resellingautomation.iam.gserviceaccount.com",
+  "client_id": "102995327745977244184",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/taylorxudepop%40resellingautomation.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

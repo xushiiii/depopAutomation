@@ -76,12 +76,12 @@ def automate_depop_listing(selected_buttons, text_input):
     edge_options.use_chromium = True
 
     #LAPTOP EDGE OPTIONS
-    #edge_options.add_argument(r"--user-data-dir=C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data")
-    #edge_options.add_argument(r"--profile-directory=Default")
+    edge_options.add_argument(r"--user-data-dir=C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data")
+    edge_options.add_argument(r"--profile-directory=Default")
 
     #PC EDGE OPTIONS:
-    edge_options.add_argument("user-data-dir=C:\\Users\\Taylor Xu\\AppData\\Local\\Microsoft\\Edge\\User Data")
-    edge_options.add_argument("profile-directory=Default")
+    #edge_options.add_argument("user-data-dir=C:\\Users\\Taylor Xu\\AppData\\Local\\Microsoft\\Edge\\User Data")
+    #edge_options.add_argument("profile-directory=Default")
     # Try WebDriver Manager first, fallback to manual if it fails
     try:
         service = Service(EdgeChromiumDriverManager().install())
