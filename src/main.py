@@ -8,7 +8,6 @@ from selenium.webdriver.edge.service import Service
 import subprocess
 import time
 
-
 from src.depop_automation.driver import get_driver
 from src.depop_automation.category_select import select_category
 from src.depop_automation.open_edge import open_create_page
@@ -52,12 +51,11 @@ def create_depop_draft(selected_buttons, text_input):
 
     global _current_driver
     driver = get_driver()
-    _current_driver = driver  # Keep reference to prevent garbage collection
+    _current_driver = driver  
 
     try:
         open_create_page(driver)
 
-        # Ensure Category is set to Men - Tops first (so the subcategory list matches your HTML)
         write_description(driver,text_input, selected_buttons)
 
         select_category(driver, gender, category, subcategory)
