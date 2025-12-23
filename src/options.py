@@ -5,8 +5,8 @@ text_input_default = ["Title","Description", "Hashtags", "Bought For Price", "Li
 text_input_ebay = ["Title", "Ebay Title","Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size", "Location"]
 #package_options = ["XXS", "XS", "S", "M", "L", "XL"]
 options = {
-    #"Occasion": ["Casual", "Festival", "Going out", "Special Occassion", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
-    #"Material": ["Acrylic", "Canvas", "Cotton", "Polyester", "Leather", "Nylon", "Silk", "Wool"],
+    "Occasion": ["Casual", "Festival", "Going out", "Special Occassion", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
+    "Material": ["Acrylic", "Canvas", "Cotton", "Polyester", "Leather", "Nylon", "Silk", "Wool"],
     "Condition": ["Brand new", "Like new", "Used - Excellent", "Used - Good", "Used - Fair"],
     #"Package Size": ["XXS", "XS", "S", "M", "L", "XL"],
     "Color": ["Black", "Grey", "White", "Brown", "Tan", "Cream", "Yellow", "Red", "Burgundy", "Orange", "Pink", "Purple", "Blue", "Navy", "Green", "Khaki", "Multi", "Silver", "Gold"],

@@ -66,10 +66,10 @@ def create_depop_draft(selected_buttons, text_input):
         #select_type_from_user_choices(driver, gender, category, subcategory, type)
 
         close_dropdowns(driver)
-        #select_occasion(driver, occasion)
+        select_occasion(driver, occasion)
 
         close_dropdowns(driver)
-        #select_material(driver, material)
+        select_material(driver, material)
         
         close_dropdowns(driver)
         select_brand(driver, brand)
@@ -93,10 +93,11 @@ def create_depop_draft(selected_buttons, text_input):
         select_styles(driver, style)
 
         close_dropdowns(driver)
-        select_shipping(driver, category, subcategory)
 
         select_price(driver, price)
 
+        select_shipping(driver, category, subcategory)
+        
         click_save_draft(driver)
 
 

@@ -1,12 +1,9 @@
 import tkinter as tk
 import threading
 from .helpers.tab_nav import focus_next_widget
-#from .depop_automation import automate_depop_listing
-from .automation import automate_depop_listing
 from .options import options, subcategory_options, common_bottom_fit, common_bottom_types, text_input_grailed, text_input_default, text_input_ebay
 from . import state
-from .grailedAutomation import automate_grailed_listing
-from src.google_sheets import write_to_sheets
+#from .grailedAutomation import automate_grailed_listing
 from src.main import create_depop_draft
 #from src.depop_automation import main 
 
@@ -327,19 +324,28 @@ def create_fit(clothing_type):
         update_all_buttons()  
 
 def on_submit():
-    if sheets_enabled.get() == True:
-        write_to_sheets(
-            state.text_inputs_data.get("Bought For Price"),  # price
-            state.text_inputs_data.get("Title"),             # description
-            state.text_inputs_data.get("Location"),          # location  
-            state.selected_buttons.get("Category"),        # category
-            state.selected_buttons.get("Subcategory")      # subcategory
-        )    
+    if sheets_enabled.get():
+        try:
+            from src.google_sheets import write_to_sheets
+            write_to_sheets(
+                state.text_inputs_data.get("Bought For Price"),
+                state.text_inputs_data.get("Title"),
+                state.text_inputs_data.get("Location"),
+                state.selected_buttons.get("Category"),
+                state.selected_buttons.get("Subcategory")
+            )
+        except Exception as e:
+            print(f"[Sheets] Error: {e}")
+            import traceback
+            traceback.print_exc()
+            # Don't disable the checkbox, just show the error
+
     threading.Thread(
         target=create_depop_draft,
         args=(state.selected_buttons.copy(), state.text_inputs_data.copy()),
         daemon=True
     ).start()
+
 
     if grailed_enabled.get() == True:
         automate_grailed_listing(state.selected_buttons, state.text_inputs_data)
