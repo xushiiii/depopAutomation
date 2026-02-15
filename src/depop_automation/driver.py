@@ -6,11 +6,17 @@ from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
 
 # LAPTOP Use your existing Edge user-data so you stay logged in:
-EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
+#EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
+#EDGE_PROFILE_DIR   = "Default"
+
+EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
 EDGE_PROFILE_DIR   = "Default"
 
+# DESKTOP Path to your local msedgedriver (manual installation)
+EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
+
 # LAPTOP Path to your local msedgedriver (manual installation)
-EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+#EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
 
 def get_driver():
     subprocess.run('taskkill /F /IM msedge.exe', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

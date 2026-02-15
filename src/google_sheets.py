@@ -9,10 +9,10 @@ edge_options.use_chromium = True
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
               "https://www.googleapis.com/auth/drive"]
 #DESKTOP
-#SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-1044349da8d8.json"  
+SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-1044349da8d8.json"  
 
 #LAPTOP
-SERVICE_ACCOUNT_FILE = r"C:\Users\taylo\Downloads\resellingautomation-7a1c1c833f65.json"
+#SERVICE_ACCOUNT_FILE = r"C:\Users\taylo\Downloads\resellingautomation-7a1c1c833f65.json"
 
 # Lazy initialization to avoid import-time errors
 _client = None
@@ -51,7 +51,14 @@ def write_to_sheets(price, description, location, category, subcategory):
         category = category or ""
         location = location or ""
         
-        sheet.update(range_name=f"A{next_row}:D{next_row}", values=[[description, category, location, price_float]])
+        sheet.batch_update([
+            {"range": f"A{next_row}", "values": [[description]]},
+            {"range": f"C{next_row}", "values": [[category]]},
+            {"range": f"D{next_row}", "values": [[location]]},
+            {"range": f"H{next_row}", "values": [[price_float]]},
+        ])
+
+
         print(f"[Sheets] Successfully wrote row {next_row} to Google Sheets")
     except Exception as e:
         print(f"[Sheets] Error writing to Google Sheets: {e}")

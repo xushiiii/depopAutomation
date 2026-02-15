@@ -16,12 +16,23 @@ class ListingScreen(tk.Frame):
     DEPOP_FORM_ORDER = [
         "button", "Category",
         "button", "Subcategory",
-        "text", "Depop Title",
+        "text", "Title",
+        "text", "Description",
         "text", "Hashtags",
+        "text", "Bought For Price",
+        "text", "Listing Price",
+        "text", "Location",
         "measurement", "Measurement",
-        "button", "Material",
+        "text", "Size", 
         "text", "Brand",
+        "button", "Gender",
         "button", "Condition",
+        "button", "Color",
+        "button", "Occasion",
+        "button", "Material",
+        "button", "Source",
+        "button", "Age",
+        "button", "Style",
     ]
     MEASUREMENTS = {
         "Tops": ["Pit-to-pit", "Top-to-bottom", "Pit-to-sleeve"], 
@@ -595,6 +606,8 @@ class ListingScreen(tk.Frame):
         state.selected_occasion.clear()
         state.selected_color.clear()
         state.selected_materials.clear()
+
+        state.text_inputs_data.clear()
 
         for textbox in list(state.textbox_dict.values()):
             if textbox.winfo_exists():
