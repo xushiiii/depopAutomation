@@ -1,5 +1,6 @@
 # src/depop_automation/category_select.py
 
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -108,7 +109,14 @@ def select_category(
         )
 
         option_el = wait.until(EC.element_to_be_clickable((By.XPATH, option_xpath)))
-        option_el.click()
+        driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+            option_el,
+        )
+        try:
+            option_el.click()
+        except ElementClickInterceptedException:
+            driver.execute_script("arguments[0].click();", option_el)
 
         # 3) Debug: what does the input show now?
         value = (

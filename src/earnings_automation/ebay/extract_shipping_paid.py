@@ -6,8 +6,8 @@ def extract_shipping_paid_prices(csv_path: str) -> List[str]:
 
     shipping: List[str] = []
     for row in reader:
-        price = row.get("Shipping and handling") or "".strip()
-        if price and price != "--":
-            shipping.append(price)
+        price = (row.get("Shipping and handling") or "").strip()
+        # Keep 1:1 row alignment with the source CSV (don't drop rows).
+        shipping.append("" if price == "--" else price)
     
     return shipping

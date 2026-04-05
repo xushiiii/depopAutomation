@@ -4,6 +4,7 @@ text_input_grailed = ["Title", "Description", "Hashtags", "Bought For Price", "L
 text_input_default = ["Depop Title","Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size", "Location"]
 text_input_ebay = ["Depop Title", "Ebay Title","Description", "Hashtags", "Bought For Price", "Listing Price", "Brand", "Size", "Location"]
 options = {
+    "Shipping": ["Depop", "Manual"],
     "Category": ["Tops", "Bottoms", "Coats and jackets", "Footwear"],
     "Occasion": ["Casual", "Festival", "Going out", "Special Occassion", "Outdoors", "Party", "Relaxation", "School", "Summer", "Winter", "Work", "Workout"],
     "Material": ["Acrylic", "Canvas", "Cotton", "Polyester", "Leather", "Nylon", "Silk", "Wool"],

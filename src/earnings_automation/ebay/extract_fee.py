@@ -6,8 +6,8 @@ def extract_fee_values(csv_path: str) -> List[str]:
 
     prices: List[str] = []
     for row in reader:
-        fee = row.get("Final Value Fee - variable") or "".strip()
-        if fee and fee != "--":
-            prices.append(fee)
+        fee = (row.get("Final Value Fee - variable") or "").strip()
+        # Keep 1:1 row alignment with the source CSV (don't drop rows).
+        prices.append("" if fee == "--" else fee)
     
     return prices

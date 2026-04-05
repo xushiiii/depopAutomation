@@ -95,22 +95,27 @@ def report_depop_earnings(csv_path: str):
             )
 
             sheet_values = [[
-                "SOLD",
-                "Depop", 
-                dates[i], 
+                # Your sheet header layout:
+                # A Depop Item Title | B Ebay Item Title | C Category | D Location | E Site | F Sold Date |
+                # G Buyer Name | H Bought For | I Sold For: | J Site Fee | K Exposure Fee | L Shipping Paid |
+                # M Shipping Actual | …
+                "Depop",
+                dates[i],
                 buyer_names[i],
             ]]
 
             sheet_values_fees = [[
-                (prices[i]),
-                (abs(payment_fees[i])), 
-                (abs(boosting_fees[i])),
-                (abs(shipping_fees[i]))
+                prices[i],
+                abs(payment_fees[i]),
+                abs(boosting_fees[i]),
+                # For now: write Buyer shipping cost into both Shipping Paid and Shipping Actual
+                abs(shipping_fees[i]),
+                abs(shipping_fees[i]),
             ]]
 
             updates.extend([
-                {"range": f"D{row}:G{row}", "values": sheet_values},
-                {"range": f"I{row}:L{row}", "values": sheet_values_fees}
+                {"range": f"E{row}:G{row}", "values": sheet_values},
+                {"range": f"I{row}:M{row}", "values": sheet_values_fees},
             ])
     
     # Batch update all changes at once

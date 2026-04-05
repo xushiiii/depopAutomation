@@ -7,7 +7,7 @@ def price_extract(csv_path: str) -> List[str]:
     prices: List[str] = []
     for row in reader:
         price = (row.get("Item price") or "").strip()
-        if price and price != "--":
-            prices.append(price)
+        # Keep 1:1 row alignment with the source CSV (don't drop rows).
+        prices.append("" if price == "--" else price)
     
     return prices 

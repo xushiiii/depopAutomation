@@ -23,6 +23,7 @@ def write_log(
     matched_title: str | None, 
     score: int | float | None, 
     sold_date,
+    buyer_name=None,
     item_price, 
     shipping_paid, 
     shipping_actual, 
@@ -34,6 +35,7 @@ def write_log(
             f"CSV title = {csv_title} | "
             f"Matched title = {matched_title} | "
             f"date=  {sold_date} | "
+            f"buyer_name = {buyer_name} | "
             f"price = {item_price} | "
             f"shipping_paid = {shipping_paid} | "
             f"shipping_actual = {shipping_actual} | "

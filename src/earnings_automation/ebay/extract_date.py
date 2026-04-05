@@ -6,9 +6,10 @@ def extract_dates(csv_path: str) -> List[str]:
     reader = read_lines(csv_path)
     dates: List[str] = []
     for row in reader:
-        date = (row.get("Order creation date") or "--").strip()
-        if date and date != "--":
-            date = format_date(date)
-            dates.append(date)
+        raw = (row.get("Order creation date") or "").strip()
+        if not raw or raw == "--":
+            dates.append("")
+        else:
+            dates.append(format_date(raw))
 
     return dates 

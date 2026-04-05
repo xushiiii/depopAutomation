@@ -35,6 +35,7 @@ from src.depop_automation.fit_select import select_fit
 _current_driver = None
 
 def create_depop_draft(selected_buttons, text_input):
+    shipping = selected_buttons.get("Shipping", "")
     gender = selected_buttons.get("Gender", "")
     category = selected_buttons.get("Category", "")
     subcategory = selected_buttons.get("Subcategory", "")
@@ -105,7 +106,7 @@ def create_depop_draft(selected_buttons, text_input):
 
         select_price(driver, price)
 
-        select_shipping(driver, category, subcategory)
+        select_shipping(driver, shipping, category, subcategory)
         
         click_save_draft(driver)
 

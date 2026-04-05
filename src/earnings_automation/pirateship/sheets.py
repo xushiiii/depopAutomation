@@ -15,6 +15,13 @@ def track_pirateship(csv_path: str):
     # Read buyer names column once instead of calling find() multiple times
     col_vals = sheet.col_values(buyer_name_col)
     buyer_names_sheet = col_vals[header_rows:]  # sheet data rows only
+    # Build a normalized index for resilient matching (case/spacing differences).
+    # If duplicates exist, keep the first occurrence.
+    normalized_to_index: dict[str, int] = {}
+    for idx, name in enumerate(buyer_names_sheet):
+        key = normalize_name(name)
+        if key and key not in normalized_to_index:
+            normalized_to_index[key] = idx
 
     log_path = start_log(csv_path)
 
@@ -24,16 +31,15 @@ def track_pirateship(csv_path: str):
         csv_name = buyer_names_csv[i]
         current_price = shipping_prices_csv[i]
 
-        # Search locally in the already-loaded column
-        try:
-            sheet_idx = buyer_names_sheet.index(csv_name)
-            row = header_rows + 1 + sheet_idx  # Convert to actual row number
-            
-            write_log(log_path, status="MATCH", sheet_name=csv_name, csv_name=csv_name, price=current_price)
-            updates.append({"range": f"M{row}", "values": [[abs(float(current_price))]]})
-        except ValueError:
-            # Name not found in sheet
+        key = normalize_name(csv_name)
+        sheet_idx = normalized_to_index.get(key)
+        if sheet_idx is None:
             write_log(log_path, status="NO MATCH", sheet_name=None, csv_name=csv_name, price=current_price)
+            continue
+
+        row = header_rows + 1 + sheet_idx  # Convert to actual row number
+        write_log(log_path, status="MATCH", sheet_name=buyer_names_sheet[sheet_idx], csv_name=csv_name, price=current_price)
+        updates.append({"range": f"M{row}", "values": [[abs(float(current_price))]]})
 
     # Batch update all changes at once
     if updates:

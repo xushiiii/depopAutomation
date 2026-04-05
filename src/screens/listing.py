@@ -19,12 +19,13 @@ class ListingScreen(tk.Frame):
         "text", "Title",
         "text", "Description",
         "text", "Hashtags",
-        "text", "Bought For Price",
-        "text", "Listing Price",
-        "text", "Location",
-        "measurement", "Measurement",
         "text", "Size", 
         "text", "Brand",
+        "text", "Bought For Price",
+        "text", "Location",
+        "text", "Listing Price",
+        "button", "Shipping",
+        "measurement", "Measurement",
         "button", "Gender",
         "button", "Condition",
         "button", "Color",
@@ -36,7 +37,7 @@ class ListingScreen(tk.Frame):
     ]
     MEASUREMENTS = {
         "Tops": ["Pit-to-pit", "Top-to-bottom", "Pit-to-sleeve"], 
-        "Bottoms": ["Leg Opening", "Inseam", "Rise", "Waist"], 
+        "Bottoms": ["Waist", "Inseam", "Rise", "Leg Opening"], 
         "Coats and jackets" : ["Pit-to-pit", "Top-to-bottom", "Pit-to-sleeve"]
     }
 
@@ -405,7 +406,7 @@ class ListingScreen(tk.Frame):
         )
         text_label.grid(row=self.row_index, column=0, sticky="nw", padx=10, pady=6)
         
-        labels = {"Top-to-bottom", "Pit-to-pit", "Pit-to-sleeve", "Leg opening", "Inseam", "Rise", "Waist"}
+        labels = {"Top-to-bottom", "Pit-to-pit", "Pit-to-sleeve", "Leg opening", "Inseam", "Rise", "Waist", "Leg Opening"}
         is_measurement = label in labels
         if is_measurement:
             textbox = tk.Text(

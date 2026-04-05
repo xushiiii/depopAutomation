@@ -9,10 +9,10 @@ edge_options.use_chromium = True
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
               "https://www.googleapis.com/auth/drive"]
 #DESKTOP
-SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-1044349da8d8.json"  
+#SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-1044349da8d8.json"  
 
 #LAPTOP
-#SERVICE_ACCOUNT_FILE = r"C:\Users\taylo\Downloads\resellingautomation-7a1c1c833f65.json"
+SERVICE_ACCOUNT_FILE = r"C:\Users\taylo\Downloads\resellingautomation-7a1c1c833f65.json"
 
 # Lazy initialization to avoid import-time errors
 _client = None

@@ -20,6 +20,7 @@ def write_description(driver, text_input: dict, selected_buttons: dict, timeout=
     waist       = g("Waist")
     inseam      = g("Inseam")
     rise        = g("Rise")
+    leg_opening = g("Leg Opening")
     hashtags    = g("Hashtags")
 
     category    = (selected_buttons.get("Category") or "").strip()
@@ -35,7 +36,8 @@ def write_description(driver, text_input: dict, selected_buttons: dict, timeout=
         details = (
             (f"Waist: {waist}\n" if waist else "") +
             (f"Inseam: {inseam}\n" if inseam else "") +
-            (f"Rise: {rise}\n" if rise else "")
+            (f"Rise: {rise}\n" if rise else "") +
+            (f"Leg Opening: {leg_opening}\n" if leg_opening else "")
         ).strip()
     elif category == "Footwear":
         details = ""  # no standard measurements
