@@ -16,25 +16,40 @@ ATTACH_TO_EXISTING_EDGE = False
 EDGE_REMOTE_DEBUG_PORT = 9222
 
 # LAPTOP Use your existing Edge user-data so you stay logged in:
-EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
-EDGE_PROFILE_DIR   = "Default"
-
-#EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+#EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
 #EDGE_PROFILE_DIR   = "Default"
 
+EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+EDGE_PROFILE_DIR   = "Default"
+
 # DESKTOP Path to your local msedgedriver (manual installation)
-#EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
+EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
 
 # LAPTOP Path to your local msedgedriver (manual installation)
-EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+#EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
 
-def get_driver():
-    if not ATTACH_TO_EXISTING_EDGE:
-        subprocess.run('taskkill /F /IM msedge.exe', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run('taskkill /F /IM msedgedriver.exe', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        # Profile + Edge processes need a moment; too short → next launch can sit on loading
-        time.sleep(4)
+# Reused across submits; only recreated if the session died or after quit_driver().
+_driver = None
 
+
+def _kill_edge_processes():
+    subprocess.run(
+        "taskkill /F /IM msedge.exe",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    subprocess.run(
+        "taskkill /F /IM msedgedriver.exe",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    # Profile + Edge processes need a moment; too short → next launch can sit on loading
+    time.sleep(4)
+
+
+def _new_edge_driver():
     edge_options = Options()
     # Depop is a heavy SPA; default "normal" waits for full load and can hit
     # "Timed out receiving message from renderer". We wait for real elements in open_create_page.
@@ -56,7 +71,6 @@ def get_driver():
         edge_options.add_argument("--log-level=3")
         edge_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
-    # Silence msedgedriver logs (Selenium version dependent)
     try:
         service = Service(EDGE_DRIVER_PATH, log_output=os.devnull)
     except TypeError:
@@ -69,3 +83,31 @@ def get_driver():
     if not ATTACH_TO_EXISTING_EDGE:
         driver.maximize_window()
     return driver
+
+
+def get_driver():
+    """Return a live Edge WebDriver, reusing the same browser session when possible."""
+    global _driver
+    if _driver is not None:
+        try:
+            _driver.window_handles  # stale / crashed session raises
+            return _driver
+        except Exception:
+            _driver = None
+
+    if not ATTACH_TO_EXISTING_EDGE:
+        _kill_edge_processes()
+
+    _driver = _new_edge_driver()
+    return _driver
+
+
+def quit_driver():
+    """Close the shared browser and clear the cache (e.g. when exiting the app)."""
+    global _driver
+    if _driver is not None:
+        try:
+            _driver.quit()
+        except Exception:
+            pass
+        _driver = None

@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
 import subprocess
+import threading
 import time
 
 from src.depop_automation.driver import get_driver
@@ -30,9 +31,9 @@ from src.depop_automation.description_writer import write_description
 from src.depop_automation.type_select import select_type
 from src.depop_automation.fit_select import select_fit
 
-# Keep a reference to the driver to prevent garbage collection
-# This prevents Edge from closing when the function completes
-_current_driver = None
+# One WebDriver session; concurrent threads would interleave navigations and clicks.
+_draft_lock = threading.Lock()
+
 
 def create_depop_draft(selected_buttons, text_input):
     shipping = selected_buttons.get("Shipping", "")
@@ -52,72 +53,68 @@ def create_depop_draft(selected_buttons, text_input):
     style = selected_buttons.get("Style", [])
     price = text_input.get("Listing Price", "")
 
-    global _current_driver
-    driver = get_driver()
-    _current_driver = driver  
+    with _draft_lock:
+        driver = get_driver()
 
-    try:
-        open_create_page(driver)
+        try:
+            open_create_page(driver)
 
-        write_description(driver,text_input, selected_buttons)
+            write_description(driver,text_input, selected_buttons)
 
-        select_category(driver, gender, category, subcategory)
+            select_category(driver, gender, category, subcategory)
 
-        #select_subcategory(driver, subcategory)
+            #select_subcategory(driver, subcategory)
 
-        close_dropdowns(driver)
-        
-        # Type and Fit are only applicable for bottoms
-        if category == "Bottoms":
-            if type:
-                select_type(driver, type)
             close_dropdowns(driver)
-            if fit:
-                select_fit(driver, fit)
-        
-        close_dropdowns(driver)
-        select_occasion(driver, occasion)
+            
+            # Type and Fit are only applicable for bottoms
+            if category == "Bottoms":
+                if type:
+                    select_type(driver, type)
+                close_dropdowns(driver)
+                if fit:
+                    select_fit(driver, fit)
+            
+            close_dropdowns(driver)
+            select_occasion(driver, occasion)
 
-        close_dropdowns(driver)
-        select_material(driver, material)
-        
-        close_dropdowns(driver)
-        select_brand(driver, brand)
+            close_dropdowns(driver)
+            select_material(driver, material)
+            
+            close_dropdowns(driver)
+            select_brand(driver, brand)
 
-        close_dropdowns(driver)
-        select_condition(driver, condition)
+            close_dropdowns(driver)
+            select_condition(driver, condition)
 
-        select_size(driver, size)
+            select_size(driver, size)
 
-        #select_quantity(driver, 1)
+            #select_quantity(driver, 1)
 
-        select_colors(driver, color)
+            select_colors(driver, color)
 
-        close_dropdowns(driver)
-        select_source(driver, source)
+            close_dropdowns(driver)
+            select_source(driver, source)
 
-        close_dropdowns(driver)
-        select_age(driver, age)
+            close_dropdowns(driver)
+            select_age(driver, age)
 
-        close_dropdowns(driver)
-        select_styles(driver, style)
+            close_dropdowns(driver)
+            select_styles(driver, style)
 
-        close_dropdowns(driver)
+            close_dropdowns(driver)
 
-        select_price(driver, price)
+            select_price(driver, price)
 
-        select_shipping(driver, shipping, category, subcategory)
-        
-        click_save_draft(driver)
+            select_shipping(driver, shipping, category, subcategory)
+            
+            click_save_draft(driver)
 
+            time.sleep(3)
 
-        time.sleep(3)
-
-    finally:
-        # Keep browser open after listing completes
-        # Edge will be terminated when a new listing begins (in get_driver())
-        pass
+        finally:
+            # Browser stays open; get_driver() reuses the same session on the next submit.
+            pass
 
 if __name__ == "__main__":
-    # Only for CLI/manual testing; UI will import and call run_depop_listing
-    run_depop_listing({}, {})
+    create_depop_draft({}, {})

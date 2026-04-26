@@ -1,6 +1,7 @@
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 def write_description(driver, text_input: dict, selected_buttons: dict, timeout=15):
@@ -48,7 +49,7 @@ def write_description(driver, text_input: dict, selected_buttons: dict, timeout=
             (f"Pit-to-sleeve: {pit2sleeve}\n" if pit2sleeve else "")
         ).strip()
 
-    tail = "Open to serious offers!\n\nAll sales are final"
+    tail = "All orders shipped next day.\nPriority shipping upgrade available prior to purchase.\nPlease message me with any questions!"
     if hashtags:
         tail = f"{tail}\n\n{hashtags}"
 
@@ -65,7 +66,15 @@ def write_description(driver, text_input: dict, selected_buttons: dict, timeout=
 
     wait = WebDriverWait(driver, timeout)
     ta = wait.until(EC.element_to_be_clickable((By.ID, "description")))
-    ta.click()
+    driver.execute_script(
+        "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+        ta,
+    )
+    try:
+        ta.click()
+    except ElementClickInterceptedException:
+        # Photo thumbnails (e.g. styles_thumbnailContainer) can sit over the textarea hit target.
+        driver.execute_script("arguments[0].focus();", ta)
     ta.send_keys(Keys.CONTROL, "a")
     ta.send_keys(Keys.DELETE)
     ta.send_keys(fulldesc)
