@@ -162,16 +162,24 @@ def select_category(
     escaped_section = escape_xpath_string(section_text)
     escaped_subcategory = escape_xpath_string(subcategory)
 
-    # Prefer the list wrapper when present; fall back if Depop drops id="group-menu"
-    # or the <ul> fails Selenium's visibility check while options are still interactable.
+    # Depop's markup for this menu changes frequently (and can be virtualized):
+    # header and option rows may be siblings, not nested under the same <div>.
+    # We identify the target section header, then find the option whose nearest
+    # preceding header matches the section text.
+    section_header_xpath_primary = (
+        "//ul[@id='group-menu']"
+        f"//p[normalize-space()='{escaped_section}']"
+    )
+    section_header_xpath_fallback = f"//p[normalize-space()='{escaped_section}']"
+
     option_xpath_primary = (
         "//ul[@id='group-menu']"
-        f"//div[.//p[normalize-space()='{escaped_section}']]"
         f"//li[@role='option'][.//p[normalize-space()='{escaped_subcategory}']]"
+        f"[preceding::p[normalize-space()='{escaped_section}'][1]]"
     )
     option_xpath_fallback = (
-        f"//div[.//p[normalize-space()='{escaped_section}']]"
         f"//li[@role='option'][.//p[normalize-space()='{escaped_subcategory}']]"
+        f"[preceding::p[normalize-space()='{escaped_section}'][1]]"
     )
 
     def _wait_option_clickable(xpath: str):
@@ -187,24 +195,63 @@ def select_category(
             return el
 
     try:
-        # 1) Reset and open — reused sessions often mis-detect "already open" and skip the toggle.
-        _ensure_category_dropdown_open(driver, wait)
+        # Re-renders during fast consecutive submits can invalidate menu nodes mid-wait/click.
+        # One controlled retry fixes most flakes without hiding real selector issues.
+        last_exc: Exception | None = None
+        for attempt in range(2):
+            try:
+                # 1) Reset and open — reused sessions often mis-detect "already open" and skip the toggle.
+                _ensure_category_dropdown_open(driver, wait)
 
-        # 2) Wait for the target row directly (more reliable than #group-menu visibility alone).
-        try:
-            option_el = _wait_option_clickable(option_xpath_primary)
-        except TimeoutException:
-            option_el = _wait_option_clickable(option_xpath_fallback)
-        driver.execute_script(
-            "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
-            option_el,
-        )
-        try:
-            option_el.click()
-        except ElementClickInterceptedException:
-            driver.execute_script("arguments[0].click();", option_el)
+                # 2) Scroll to the section header first (important for virtualized menus).
+                try:
+                    header_el = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, section_header_xpath_primary)
+                        )
+                    )
+                except TimeoutException:
+                    header_el = wait.until(
+                        EC.presence_of_element_located(
+                            (By.XPATH, section_header_xpath_fallback)
+                        )
+                    )
 
-        # 3) Debug: what does the input show now?
+                driver.execute_script(
+                    "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+                    header_el,
+                )
+                time.sleep(0.1)
+
+                # 3) Wait for the target option row (scoped to the nearest matching header).
+                try:
+                    option_el = _wait_option_clickable(option_xpath_primary)
+                except TimeoutException:
+                    option_el = _wait_option_clickable(option_xpath_fallback)
+
+                driver.execute_script(
+                    "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+                    option_el,
+                )
+                try:
+                    option_el.click()
+                except ElementClickInterceptedException:
+                    driver.execute_script("arguments[0].click();", option_el)
+
+                last_exc = None
+                break
+            except (StaleElementReferenceException, TimeoutException) as e:
+                last_exc = e
+                # Nudge the SPA to settle, then retry with a fresh open + re-query.
+                body = driver.find_element(By.TAG_NAME, "body")
+                body.send_keys(Keys.ESCAPE)
+                time.sleep(0.25 + 0.25 * attempt)
+                continue
+
+        if last_exc is not None:
+            raise last_exc
+
+        # 4) Debug: what does the input show now?
         value = (
             wait.until(EC.visibility_of_element_located((By.ID, "group-input")))
             .get_attribute("value")

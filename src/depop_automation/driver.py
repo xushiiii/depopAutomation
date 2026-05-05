@@ -16,17 +16,17 @@ ATTACH_TO_EXISTING_EDGE = False
 EDGE_REMOTE_DEBUG_PORT = 9222
 
 # LAPTOP Use your existing Edge user-data so you stay logged in:
-#EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
-#EDGE_PROFILE_DIR   = "Default"
-
-EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
 EDGE_PROFILE_DIR   = "Default"
 
+#EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+#EDGE_PROFILE_DIR   = "Default"
+
 # DESKTOP Path to your local msedgedriver (manual installation)
-EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
+#EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
 
 # LAPTOP Path to your local msedgedriver (manual installation)
-#EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
 
 # Reused across submits; only recreated if the session died or after quit_driver().
 _driver = None
