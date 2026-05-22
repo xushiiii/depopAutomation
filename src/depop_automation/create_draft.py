@@ -30,6 +30,12 @@ from src.depop_automation.close_downdown import close_dropdowns
 from src.depop_automation.description_writer import write_description
 from src.depop_automation.type_select import select_type
 from src.depop_automation.fit_select import select_fit
+from src.depop_automation.human_pause import (
+    pause_between_sections,
+    pause_between_steps,
+    pause_long,
+    pause_medium,
+)
 
 # One WebDriver session; concurrent threads would interleave navigations and clicks.
 _draft_lock = threading.Lock()
@@ -58,59 +64,86 @@ def create_depop_draft(selected_buttons, text_input):
 
         try:
             open_create_page(driver)
+            pause_medium()
 
-            write_description(driver,text_input, selected_buttons)
+            write_description(driver, text_input, selected_buttons)
+            pause_between_sections()
 
             select_category(driver, gender, category, subcategory)
-
-            #select_subcategory(driver, subcategory)
+            pause_between_sections()
 
             close_dropdowns(driver)
-            
-            # Type and Fit are only applicable for bottoms
+            pause_between_steps()
+
             if category == "Bottoms":
                 if type:
                     select_type(driver, type)
+                    pause_between_steps()
                 close_dropdowns(driver)
+                pause_between_steps()
                 if fit:
                     select_fit(driver, fit)
-            
+                    pause_between_steps()
+
             close_dropdowns(driver)
+            pause_between_steps()
+
             select_occasion(driver, occasion)
+            pause_between_steps()
 
             close_dropdowns(driver)
+            pause_between_steps()
+
             select_material(driver, material)
-            
-            close_dropdowns(driver)
-            select_brand(driver, brand)
+            pause_between_steps()
 
             close_dropdowns(driver)
+            pause_between_steps()
+
+            select_brand(driver, brand, type_delay=0.09)
+            pause_between_steps()
+
+            close_dropdowns(driver)
+            pause_between_steps()
+
             select_condition(driver, condition)
+            pause_between_steps()
 
             select_size(driver, size)
-
-            #select_quantity(driver, 1)
+            pause_between_steps()
 
             select_colors(driver, color)
+            pause_between_steps()
 
             close_dropdowns(driver)
+            pause_between_steps()
+
             select_source(driver, source)
+            pause_between_steps()
 
             close_dropdowns(driver)
+            pause_between_steps()
+
             select_age(driver, age)
+            pause_between_steps()
 
             close_dropdowns(driver)
+            pause_between_steps()
+
             select_styles(driver, style)
+            pause_between_sections()
 
             close_dropdowns(driver)
+            pause_between_steps()
 
             select_price(driver, price)
+            pause_between_sections()
 
             select_shipping(driver, shipping, category, subcategory)
-            
-            click_save_draft(driver)
+            pause_long()
 
-            time.sleep(3)
+            click_save_draft(driver)
+            pause_long()
 
         finally:
             # Browser stays open; get_driver() reuses the same session on the next submit.

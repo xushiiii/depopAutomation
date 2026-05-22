@@ -1,8 +1,38 @@
 from selenium.common.exceptions import ElementClickInterceptedException
+from src.depop_automation.human_pause import pause_medium, pause_short
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+
+def _textarea_content(element) -> str:
+    return (element.get_attribute("value") or element.text or "").strip()
+
+
+def _fill_textarea(driver, element, text: str) -> None:
+    driver.execute_script(
+        """
+        const el = arguments[0];
+        const value = arguments[1];
+        el.focus();
+        const setter = Object.getOwnPropertyDescriptor(
+            window.HTMLTextAreaElement.prototype, 'value'
+        ).set;
+        setter.call(el, value);
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        """,
+        element,
+        text,
+    )
+    if _textarea_content(element):
+        return
+    element.click()
+    element.send_keys(Keys.CONTROL, "a")
+    element.send_keys(Keys.DELETE)
+    element.send_keys(text)
+
 
 def write_description(driver, text_input: dict, selected_buttons: dict, timeout=15):
     """
@@ -70,16 +100,15 @@ def write_description(driver, text_input: dict, selected_buttons: dict, timeout=
         "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
         ta,
     )
+    pause_short()
     try:
         ta.click()
     except ElementClickInterceptedException:
         # Photo thumbnails (e.g. styles_thumbnailContainer) can sit over the textarea hit target.
         driver.execute_script("arguments[0].focus();", ta)
-    ta.send_keys(Keys.CONTROL, "a")
-    ta.send_keys(Keys.DELETE)
-    ta.send_keys(fulldesc)
+    pause_short()
+    _fill_textarea(driver, ta, fulldesc)
+    pause_medium()
 
-    # (Optional) soft check (avoid strict equality due to whitespace normalization)
-    current = ta.get_attribute("value") or ""
-    if not current:
+    if not _textarea_content(ta):
         raise RuntimeError("Description field is still empty after typing.")

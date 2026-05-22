@@ -1,13 +1,17 @@
 import os
 import subprocess
 import time
+import urllib.error
+import urllib.request
+
 from selenium import webdriver
+from selenium.common.exceptions import SessionNotCreatedException
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
 
 # False: kill Edge, launch a new window with your profile (original behavior).
 # True: attach to Edge you already started — see EDGE_REMOTE_DEBUG_PORT below.
-ATTACH_TO_EXISTING_EDGE = False
+ATTACH_TO_EXISTING_EDGE = True
 
 # When ATTACH_TO_EXISTING_EDGE is True, start Edge yourself with remote debugging, e.g.:
 #   "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --remote-debugging-port=9222
@@ -16,17 +20,17 @@ ATTACH_TO_EXISTING_EDGE = False
 EDGE_REMOTE_DEBUG_PORT = 9222
 
 # LAPTOP Use your existing Edge user-data so you stay logged in:
-EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
-EDGE_PROFILE_DIR   = "Default"
-
-#EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+#EDGE_USER_DATA_DIR = r"C:\Users\taylo\AppData\Local\Microsoft\Edge\User Data"
 #EDGE_PROFILE_DIR   = "Default"
 
+EDGE_USER_DATA_DIR = r"C:\Users\Taylor Xu\AppData\Local\Microsoft\Edge\User Data"
+EDGE_PROFILE_DIR   = "Default"
+
 # DESKTOP Path to your local msedgedriver (manual installation)
-#EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
+EDGE_DRIVER_PATH   = r"C:\Users\Taylor Xu\Downloads\edgedriver_win64 (2)\msedgedriver.exe"
 
 # LAPTOP Path to your local msedgedriver (manual installation)
-EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
+#EDGE_DRIVER_PATH   = r"C:\Users\taylo\Downloads\edgedriver_win64 (1)\msedgedriver.exe"
 
 # Reused across submits; only recreated if the session died or after quit_driver().
 _driver = None
@@ -49,7 +53,31 @@ def _kill_edge_processes():
     time.sleep(4)
 
 
+def _edge_debug_port_ready() -> bool:
+    try:
+        urllib.request.urlopen(
+            f"http://127.0.0.1:{EDGE_REMOTE_DEBUG_PORT}/json/version",
+            timeout=2,
+        )
+        return True
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return False
+
+
+def _attach_mode_help() -> str:
+    return (
+        f"Start Edge with remote debugging on port {EDGE_REMOTE_DEBUG_PORT}, "
+        "keep it open, then submit again:\n"
+        '  cd "C:\\Program Files (x86)\\Microsoft\\Edge\\Application"\n'
+        f"  .\\msedge.exe --remote-debugging-port={EDGE_REMOTE_DEBUG_PORT}\n"
+        "Taskbar Edge without that flag will not work while ATTACH_TO_EXISTING_EDGE is True."
+    )
+
+
 def _new_edge_driver():
+    if ATTACH_TO_EXISTING_EDGE and not _edge_debug_port_ready():
+        raise RuntimeError(_attach_mode_help())
+
     edge_options = Options()
     # Depop is a heavy SPA; default "normal" waits for full load and can hit
     # "Timed out receiving message from renderer". We wait for real elements in open_create_page.
@@ -76,7 +104,12 @@ def _new_edge_driver():
     except TypeError:
         service = Service(EDGE_DRIVER_PATH, log_path=os.devnull)
 
-    driver = webdriver.Edge(service=service, options=edge_options)
+    try:
+        driver = webdriver.Edge(service=service, options=edge_options)
+    except SessionNotCreatedException as exc:
+        if ATTACH_TO_EXISTING_EDGE:
+            raise RuntimeError(_attach_mode_help()) from exc
+        raise
 
     driver.set_page_load_timeout(60)
     driver.implicitly_wait(10)
