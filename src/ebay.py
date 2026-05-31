@@ -4,6 +4,8 @@ from pathlib import Path
 import csv
 from typing import Dict, Any
 import ebay_options as ebay_options
+
+from src.machine_paths import get_paths
 INFO_LINES = [
     "#INFO,Version=0.0.2,Template= eBay-draft-listings-template_US,,,,,,,,",
     "#INFO Action and Category ID are required fields. 1) Set Action to Draft 2) Please find the category ID for your listings here: https://pages.ebay.com/sellerinformation/news/categorychanges.html,,,,,,,,,,",
@@ -12,7 +14,7 @@ INFO_LINES = [
 ]
 
 def create_ebay_drafts(selected_buttons, text_input):
-    folder_path = Path(r"C:\Users\taylo\Downloads\ebay_listings")
+    out_dir = get_paths().ebay_listings_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     file_path = out_dir / "listing.csv"
     with file_path.open("w", newline="", encoding="utf-8-sig") as f:

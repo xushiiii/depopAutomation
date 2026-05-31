@@ -1,5 +1,6 @@
 import tkinter as tk 
 
+from src.machine_paths import set_machine
 from src.screens.home import HomeScreen 
 from src.screens.listing import ListingScreen
 from src.screens.earnings import EarningsScreen 
@@ -15,6 +16,22 @@ class App(tk.Tk):
         self.title("Reselling Automation")
         self.geometry("1200x700")
 
+        self.machine = tk.StringVar(value="desktop")
+        set_machine("desktop")
+
+        machine_bar = tk.Frame(self, padx=10, pady=6)
+        machine_bar.pack(side="top", fill="x")
+        tk.Label(machine_bar, text="Machine:", font=("Segoe UI", 10)).pack(side="left")
+        for label, value in (("Desktop", "desktop"), ("Laptop", "laptop")):
+            tk.Radiobutton(
+                machine_bar,
+                text=label,
+                variable=self.machine,
+                value=value,
+                font=("Segoe UI", 10),
+                command=self._on_machine_changed,
+            ).pack(side="left", padx=(8, 0))
+
         container = tk.Frame(self)
         container.pack(fill="both", expand = True)
         container.grid_rowconfigure(0, weight = 1)
@@ -27,6 +44,14 @@ class App(tk.Tk):
             self.screens[Scrn.__name__] = screen 
 
         self.show("HomeScreen")
+
+    def _on_machine_changed(self) -> None:
+        set_machine(self.machine.get())
+        from src.google_sheets import reset_sheets_client
+        from src.depop_automation.driver import quit_driver
+
+        reset_sheets_client()
+        quit_driver()
 
     def show(self, screen_name: str):
         screen = self.screens[screen_name]

@@ -11,9 +11,7 @@ import csv
 import threading
 from pathlib import Path
 
-
-CSV_FILENAME = "depop_drafts.csv"
-CSV_PATH = Path.home() / "Downloads" / CSV_FILENAME
+from src.machine_paths import get_paths
 
 TEMPLATE_VERSION_ROW = ["Template version: 6"] + [""] * 25
 
@@ -284,11 +282,16 @@ def _build_description(text_input: dict, selected_buttons: dict) -> str:
     return fulldesc[:1000]
 
 
+def _depop_csv_path() -> Path:
+    return get_paths().depop_csv_path
+
+
 def _ensure_csv_exists() -> None:
-    if CSV_PATH.exists():
+    csv_path = _depop_csv_path()
+    if csv_path.exists():
         return
-    CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(TEMPLATE_VERSION_ROW)
         writer.writerow(HEADER_ROW)
@@ -351,6 +354,7 @@ def append_depop_csv_row(selected_buttons: dict, text_input: dict) -> None:
     with _write_lock:
         _ensure_csv_exists()
         row = _build_row(selected_buttons, text_input)
-        with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
+        csv_path = _depop_csv_path()
+        with open(csv_path, "a", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow(row)
-    print(f"[Depop CSV] Appended row -> {CSV_PATH}")
+    print(f"[Depop CSV] Appended row -> {csv_path}")

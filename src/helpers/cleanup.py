@@ -17,15 +17,14 @@ WORDS = {
 edge_options = Options()
 edge_options.use_chromium = True  
 
+from src.machine_paths import get_paths
+
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets",
               "https://www.googleapis.com/auth/drive"]
-#DESKTOP
-SERVICE_ACCOUNT_FILE = "C:\\Users\\Taylor Xu\\Downloads\\resellingautomation-1044349da8d8.json"  
 
-#LAPTOP
-#SERVICE_ACCOUNT_FILE = "C:\\Users\\taylo\\source\\depopAutomation\\misc\\resellingautomation-9c38ccc65a6d.json"
-
-credentials = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+credentials = Credentials.from_service_account_file(
+    get_paths().service_account_file, scopes=SCOPES
+)
 client = gspread.authorize(credentials)
 sheet = client.open("Reselling").sheet1  
 

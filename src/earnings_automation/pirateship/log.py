@@ -1,13 +1,14 @@
 from pathlib import Path 
 from datetime import datetime 
 
-LOG_DIR = Path(r"C:\Users\taylo\OneDrive\Desktop\pirateship_earnings")
+from src.machine_paths import get_paths
 
 def start_log(csv_path: str) -> Path:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    log_dir = get_paths().pirateship_earnings_log_dir
+    log_dir.mkdir(parents=True, exist_ok=True)
     csv_stem = Path(csv_path).stem 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_path = LOG_DIR / f"{csv_stem}_processed_{timestamp}.log.txt"
+    log_path = log_dir / f"{csv_stem}_processed_{timestamp}.log.txt"
 
     with log_path.open("w", encoding="utf-8") as f:
         f.write(f"[START] Processing CSV: {csv_path}\n")
